@@ -68,4 +68,6 @@ class UISolver(containerId: String) extends SolverInterface with BoardActionHand
   override def onLeftClick(row: Int, col: Int): Unit = {}
 
   override def onRightClick(row: Int, col: Int): Unit = {}
+
+  override def drawOverlayHorizontal(start: Int, end: Int, row: Int): Unit = {}
 }

@@ -66,6 +66,14 @@ $boxSize = 50px
   background-color: #b7dcf4
 }
 
+.square-overlay {
+  @extends .square
+  background-color: #e9e9e9
+  opacity: 0.4
+  z-index 500
+  position absolute
+}
+
 .clues-row {
   flexbox(flex)
 }
@@ -104,6 +112,11 @@ $boxSize = 50px
   border: 1px solid darken(blue, 10)
 }
 
+.particle-delete-success {
+  background-color: grey
+  border: 1px solid darken(grey, 10)
+}
+
 .particle-failure {
   background-color: red
   border: 1px solid darken(red, 10)
@@ -113,10 +126,23 @@ $boxSize = 50px
   display: none
 }
 
+.particles-and-overlays {
+  position: absolute
+  top: 0
+  left: 0
+  pointer-events: none;
+}
+
 .particle-board {
   position: absolute
   top: 0
   left: 0
+  pointer-events: none;
+}
+
+.overlay {
+  pointer-events: none;
+
 }
 
 .view-wrapper {
@@ -129,6 +155,24 @@ $boxSize = 50px
   position relative
 }
 
-  .particle-settings {
-    z-index 1000000
-  }
+.particle-settings {
+  z-index 1000000
+}
+
+$count-overlay-color = orange
+$count-overlay-text-color = darken(orange, 20)
+
+.count-overlay {
+  width 40px
+  height 40px
+  border-radius 50%
+  background-color $count-overlay-color
+  border 5px solid darken($count-overlay-color, 10)
+  color $count-overlay-text-color
+  font-weight bold
+  line-height 27px
+  font-size 25px
+  text-align center
+  z-index 500
+  position absolute
+}

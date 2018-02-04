@@ -1,6 +1,7 @@
 package nonograms.ui
 
 import nonograms._
+import org.scalajs.dom
 import org.scalajs.dom.html.Div
 import org.scalajs.dom.{Event, Node}
 
@@ -15,6 +16,7 @@ case class CluesRowView(clues: LineClues, row: Int) {
       div(cls := "clues-clue", clue.toString)
     )
   ).render
+
 }
 
 case class CluesColView(clues: LineClues, row: Int) {
@@ -38,11 +40,11 @@ case class SquareView(state: SquareState, row: Int, col: Int, onLeftClick: (Int,
     })).render
 
   rendered.oncontextmenu = (event: Event) => {
-      println("right click")
-      onRightClick(row, col)
-      // Don't show the context menu
-      event.preventDefault()
-    }
+    println("right click")
+    onRightClick(row, col)
+    // Don't show the context menu
+    event.preventDefault()
+  }
 }
 
 case class BoardStateView(board: Board, bs: BoardState, clues: Clues, handler: BoardActionHandler) {
@@ -89,6 +91,116 @@ case class BoardStateView(board: Board, bs: BoardState, clues: Clues, handler: B
     )
   ).render
 
+  var startCollecting = false
+  val sizeOfSquare = 50
+
+  squares.onmousedown = (e) => {
+    e.preventDefault()
+    startCollecting = true
+    val leftMouse = e.button == 0
+    dom.console.info(e)
+
+    val squaresBounds = squares.getBoundingClientRect()
+
+    val startX = e.clientX.toInt - squaresBounds.left.toInt
+    val startY = e.clientY.toInt - squaresBounds.top.toInt
+
+    var lastSquareX = startX
+    var lastSquareY = startY
+
+    val startSquareX: Int = startX / sizeOfSquare
+    val startSquareY: Int = startY / sizeOfSquare
+
+    var verticalMode = false
+    var horizontalMode = false
+
+    println(s"onmousedown x=${startX} idx=${startSquareX} left=${squaresBounds.left} top=${squaresBounds.top}")
+
+    dom.document.onmousemove = (e) => {
+      e.preventDefault()
+      val squaresBounds = squares.getBoundingClientRect()
+
+      val x = e.clientX.toInt - squaresBounds.left.toInt
+      val y = e.clientY.toInt - squaresBounds.top.toInt
+
+      val squareX: Int = x / sizeOfSquare
+      val squareY: Int = y / sizeOfSquare
+
+      if (lastSquareX != squareX || lastSquareY != squareY) {
+        lastSquareX = squareX
+        lastSquareY = squareY
+
+        if (!verticalMode && !horizontalMode) {
+          if (squareX != startSquareX) {
+            horizontalMode = true
+          }
+          else if (squareY != startSquareY) {
+            verticalMode = true
+          }
+        }
+
+        if (horizontalMode) {
+          handler.drawOverlayHorizontal(startSquareX, squareX, squareY)
+          println(s"x ${startSquareX}-${squareX}")
+        }
+        else if (verticalMode) {
+          handler.drawOverlayVertical(startSquareY, squareY, squareX)
+          println(s"y ${startSquareY}-${squareY}")
+        }
+        else {
+          println(s"x ${startSquareX}-${squareX} y ${startSquareY}-${squareY} vm=${verticalMode} hm=$horizontalMode")
+        }
+      }
+    }
+
+    squares.onmouseup = (e) => {
+      println("onmouseup")
+
+      val squaresBounds = squares.getBoundingClientRect()
+
+      val x = e.clientX.toInt - squaresBounds.left.toInt
+      val y = e.clientY.toInt - squaresBounds.top.toInt
+
+      val squareX: Int = Math.max(x / sizeOfSquare, 0)
+      val squareY: Int = Math.max(y / sizeOfSquare, 0)
+
+      if (horizontalMode) {
+        if (squareX >= startSquareX) {
+          for (idx <- Range(startSquareX, squareX + 1)) {
+            if (leftMouse) handler.onLeftClick(squareY, idx)
+            else handler.onRightClick(squareY, idx)
+          }
+        }
+        else {
+          for (idx <- Range(squareX, startSquareX + 1)) {
+            if (leftMouse) handler.onLeftClick(squareY, idx)
+            else handler.onRightClick(squareY, idx)
+          }
+        }
+      }
+      else if (verticalMode) {
+        if (squareY >= startSquareY) {
+          for (idx <- Range(startSquareY, squareY + 1)) {
+            if (leftMouse) handler.onLeftClick(idx, squareX)
+            else handler.onRightClick(idx, squareX)
+          }
+        }
+        else {
+          for (idx <- Range(squareY, startSquareY + 1)) {
+            if (leftMouse) handler.onLeftClick(idx, squareX)
+            else handler.onRightClick(idx, squareX)
+          }
+        }
+      }
+
+      handler.clearOverlay()
+
+      dom.document.onmousemove = (e) => {}
+      squares.onmouseleave = (e) => {}
+      squares.onmouseup = (e) => {}
+    }
+  }
+
 
   val rendered: Node = div(cls := "board")(
     div(cls := "board-squares-rows")(
@@ -118,7 +230,12 @@ case class AnimationFailure(square: SquareView, onFinished: () => Unit) extends 
 
 trait BoardActionHandler {
   def onLeftClick(row: Int, col: Int): Unit
+
   def onRightClick(row: Int, col: Int): Unit
+
+  def drawOverlayHorizontal(start: Int, end: Int, row: Int): Unit = {}
+  def drawOverlayVertical(start: Int, end: Int, col: Int): Unit = {}
+  def clearOverlay(): Unit = {}
 }
 
 object BoardStateView {

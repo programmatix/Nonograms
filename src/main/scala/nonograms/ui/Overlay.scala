@@ -101,28 +101,70 @@ case class Particle(clsName: String, childOf: Div, startedTime: Long, initialX: 
   }
 }
 
-class Particles(val squareSizePixels: Int, boardWidthSquares: Int, boardHeightSquares: Int) {
+// Animations and particles need to exist independent of BoardStateView, which gets destroyed
+class Overlay(val squareSizePixels: Int, boardWidthSquares: Int, boardHeightSquares: Int) {
   private val animations = ArrayBuffer.empty[Animation]
 
   // Give ourselves some padding so particles don't clip right off the edge
   private val offsetInSquaresX = 2
   private val offsetInSquaresY = 0
+  private val overlay = div(cls := "overlay").render
+  private val particles = div(cls := "particle-board").render
+  private val countOffsetX: Float = squareSizePixels / 2
+  private val countOffsetY: Float = squareSizePixels / 2
 
-  val rendered = div(cls := "particle-board").render
+  val rendered = div(cls := "particles-and-overlays")(
+    particles,
+    overlay
+  ).render
 
   rendered.style.top = (-offsetInSquaresY * squareSizePixels).toString + "px"
   rendered.style.left = (-offsetInSquaresX * squareSizePixels).toString + "px"
+
   rendered.style.width = ((offsetInSquaresX*2 + boardWidthSquares) * squareSizePixels).toString + "px"
   rendered.style.height = ((offsetInSquaresY*2 + boardHeightSquares) * squareSizePixels).toString + "px"
 
-  def animateSquareMarkFailure(row: Int, col: Int): Unit = {
+  particles.style.width = ((offsetInSquaresX*2 + boardWidthSquares) * squareSizePixels).toString + "px"
+  particles.style.height = ((offsetInSquaresY*2 + boardHeightSquares) * squareSizePixels).toString + "px"
+
+//  overlay.style.top = (-offsetInSquaresY * squareSizePixels).toString + "px"
+//  overlay.style.left = (-offsetInSquaresX * squareSizePixels).toString + "px"
+
+  overlay.style.width = ((offsetInSquaresX*2 + boardWidthSquares) * squareSizePixels).toString + "px"
+  overlay.style.height = ((offsetInSquaresY*2 + boardHeightSquares) * squareSizePixels).toString + "px"
+
+  overlay.onmouseup = (e) => {
+    println("overlay onmouseup")
+  }
+
+  particles.onmouseup = (e) => {
+    println("particles onmouseup")
+  }
+
+  rendered.onmouseup = (e) => {
+    println("rendered onmouseup")
+  }
+
+
+  def getCoords(row: Int, col: Int): (Int,Int) = {
     val x = ((col + offsetInSquaresX) * squareSizePixels) + squareSizePixels / 2
     val y = ((row + offsetInSquaresY) * squareSizePixels) + squareSizePixels / 2
+    (x, y)
+  }
 
-    val anim = AnimationParticleBurst("particle-failure", rendered, x, y, particleSettings, () => {
-//      println("Animation done")
-    })
-    animations.append(anim)
+  def animateSquareMarkFailure(row: Int, col: Int): Unit = {
+    val (x, y) = getCoords(row,col)
+    animations.append(AnimationParticleBurst("particle-failure", particles, x, y, particleSettings, () => {}))
+  }
+
+  def animateSquareDeleteFailure(row: Int, col: Int): Unit = {
+    val (x, y) = getCoords(row,col)
+    animations.append(AnimationParticleBurst("particle-failure", particles, x, y, particleSettings, () => {}))
+  }
+
+  def animateSquareDeleteSuccess(row: Int, col: Int): Unit = {
+    val (x, y) = getCoords(row,col)
+    animations.append(AnimationParticleBurst("particle-delete-success", particles, x, y, particleSettings, () => {}))
   }
 
   private var particleSettings = ParticleSettings()
@@ -131,7 +173,7 @@ class Particles(val squareSizePixels: Int, boardWidthSquares: Int, boardHeightSq
     val x = ((col + offsetInSquaresX) * squareSizePixels) + squareSizePixels / 2
     val y = ((row + offsetInSquaresY) * squareSizePixels) + squareSizePixels / 2
 
-    val anim = AnimationParticleBurst("particle-success", rendered, x, y, particleSettings, () => {
+    val anim = AnimationParticleBurst("particle-success", particles, x, y, particleSettings, () => {
 //      println("Animation done")
     })
     animations.append(anim)
@@ -146,12 +188,89 @@ class Particles(val squareSizePixels: Int, boardWidthSquares: Int, boardHeightSq
   def keepCheckingForFinishedAnimations(): Unit = {
     if (particleSettings.animate == 1 && animations.nonEmpty && !animations.exists(_.done == false)) {
 //      println("All animations done, deleting all")
-      while (rendered.hasChildNodes()) rendered.removeChild(rendered.lastChild)
+      while (particles.hasChildNodes()) particles.removeChild(particles.lastChild)
       animations.clear()
     }
 
     setTimeout(particleSettings.cleanupEveryXMecs) {
       keepCheckingForFinishedAnimations()
     }
+  }
+
+
+  def drawOverlayHorizontal(start: Int, end: Int, row: Int): Unit = {
+    clearOverlay()
+
+    if (end >= start) {
+      for (idx <- Range(start, end + 1)) {
+        val view = div(cls := "square-overlay").render
+        view.style.top = ((row + offsetInSquaresY) * squareSizePixels).toString + "px"
+        view.style.left = ((idx + offsetInSquaresX) * squareSizePixels).toString + "px"
+        overlay.appendChild(view)
+      }
+
+      val count = (end - start) + 1
+      val view = div(cls := "count-overlay", count).render
+      view.style.top = ((row + offsetInSquaresY) * squareSizePixels + countOffsetY).toString + "px"
+      view.style.left = ((end + 1 + offsetInSquaresX) * squareSizePixels - countOffsetX).toString + "px"
+
+      overlay.appendChild(view)
+    }
+    else {
+      for (idx <- Range(end, start + 1)) {
+        val view = div(cls := "square-overlay").render
+        view.style.top = ((row + offsetInSquaresY) * squareSizePixels).toString + "px"
+        view.style.left = ((idx + offsetInSquaresX) * squareSizePixels).toString + "px"
+        overlay.appendChild(view)
+      }
+
+      val count = (start - end) + 1
+      val view = div(cls := "count-overlay", count).render
+      view.style.top = ((row + offsetInSquaresY) * squareSizePixels + countOffsetY).toString + "px"
+      view.style.left = ((end + 1 + offsetInSquaresX) * squareSizePixels - countOffsetX).toString + "px"
+
+      overlay.appendChild(view)
+    }
+  }
+
+  def drawOverlayVertical(start: Int, end: Int, col: Int): Unit = {
+    clearOverlay()
+
+    if (end >= start) {
+      for (idx <- Range(start, end + 1)) {
+        val view = div(cls := "square-overlay").render
+        view.style.left = ((col + offsetInSquaresX) * squareSizePixels).toString + "px"
+        view.style.top = ((idx + offsetInSquaresY) * squareSizePixels).toString + "px"
+
+        overlay.appendChild(view)
+      }
+
+      val count = (end - start) + 1
+      val view = div(cls := "count-overlay", count).render
+      view.style.left = ((col + 1 + offsetInSquaresX) * squareSizePixels - countOffsetX).toString + "px"
+      view.style.top = ((end + offsetInSquaresY) * squareSizePixels + countOffsetY).toString + "px"
+
+      overlay.appendChild(view)
+    }
+    else {
+        for (idx <- Range(end, start + 1)) {
+          val view = div(cls := "square-overlay").render
+          view.style.left = ((col + offsetInSquaresX) * squareSizePixels).toString + "px"
+          view.style.top = ((idx + offsetInSquaresY) * squareSizePixels).toString + "px"
+
+          overlay.appendChild(view)
+        }
+
+        val count = (start - end) + 1
+        val view = div(cls := "count-overlay", count).render
+        view.style.left = ((col  + offsetInSquaresX) * squareSizePixels - countOffsetX).toString + "px"
+        view.style.top = ((end + offsetInSquaresY) * squareSizePixels + countOffsetY).toString + "px"
+
+        overlay.appendChild(view)
+      }
+  }
+
+  def clearOverlay(): Unit = {
+    while (overlay.hasChildNodes()) overlay.removeChild(overlay.lastChild)
   }
 }

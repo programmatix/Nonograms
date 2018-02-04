@@ -19,17 +19,17 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
   private val container = dom.document.getElementById(containerId)
   private val log = new MessageLog()
   private val viewWrapper = div(cls := "view-wrapper").render
-  // Animations and particles need to exist independent of BoardStateView, which gets destroyed
   // 'squareSizePixels' needs to sync up with css
-  private val particles = new Particles(squareSizePixels = 50, boardSize, boardSize)
+  private val overlay = new Overlay(squareSizePixels = 50, boardSize, boardSize)
   private val particlesDevSettingsWrapper = div().render
   private val particlesDevSettingsShow = button(cls := "btn btn-default", "Show dev settings").render
   particlesDevSettingsShow.onclick = (e) => {
-    val particlesDevSettings = new ParticlesDevSettings((ps) => particles.settingsChanged(ps))
+    val particlesDevSettings = new ParticlesDevSettings((ps) => overlay.settingsChanged(ps))
     particlesDevSettingsShow.style.display = "none"
     particlesDevSettingsWrapper.appendChild(particlesDevSettings.rendered)
     particlesDevSettingsWrapper.appendChild(view.boardDebug)
   }
+
 
   // These are what can update based on the user's actions
   private var boardState = init
@@ -40,7 +40,7 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
     particlesDevSettingsShow,
     log.rendered,
     div(cls := "top")(
-      particles.rendered,
+      overlay.rendered,
       viewWrapper
     )
   ).render
@@ -57,10 +57,10 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
         view = BoardStateView.update(view, boardState)
         while (viewWrapper.hasChildNodes()) viewWrapper.removeChild(viewWrapper.lastChild)
         viewWrapper.appendChild(view.rendered)
-        particles.animateSquareMarkSuccess(row, col)
+        overlay.animateSquareMarkSuccess(row, col)
 
       case v: PlayerActionFailure =>
-        particles.animateSquareMarkFailure(row, col)
+        overlay.animateSquareMarkFailure(row, col)
 
       case _ =>
         println("no op")
@@ -76,10 +76,10 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
         boardState = boardState.delete(row, col)
         while (viewWrapper.hasChildNodes()) viewWrapper.removeChild(viewWrapper.lastChild)
         viewWrapper.appendChild(view.rendered)
-        particles.animateSquareMarkSuccess(row, col)
+        overlay.animateSquareDeleteSuccess(row, col)
 
       case v: PlayerActionFailure =>
-        particles.animateSquareMarkFailure(row, col)
+        overlay.animateSquareDeleteFailure(row, col)
 
       case _ =>
     }
@@ -89,7 +89,17 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
     viewWrapper.appendChild(view.rendered)
   }
 
+  override def drawOverlayHorizontal(start: Int, end: Int, row: Int): Unit = {
+    overlay.drawOverlayHorizontal(start, end, row)
+  }
 
+  override def drawOverlayVertical(start: Int, end: Int, col: Int): Unit = {
+    overlay.drawOverlayVertical(start, end, col)
+  }
+
+  override def clearOverlay(): Unit = {
+    overlay.clearOverlay()
+  }
 }
 
 
