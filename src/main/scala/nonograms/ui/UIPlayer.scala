@@ -1,5 +1,8 @@
 package nonograms.ui
 
+import java.util.Date
+import scala.scalajs.js.timers.setTimeout
+
 import nonograms._
 import nonograms.playing._
 import org.scalajs.dom
@@ -26,7 +29,6 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
   private val container = dom.document.getElementById(containerId)
   private val log = new MessageLog()
   private val viewWrapper = div(cls := "view-wrapper").render
-  private[ui] val effects = new Effects(squareSizePixels = UIPlayer.SQUARE_SIZE, boardSize, boardSize)
   private val particlesDevSettingsWrapper = div().render
   private val particlesDevSettingsShow = button(cls := "btn btn-default", "Show dev settings").render
   particlesDevSettingsShow.onclick = (e) => {
@@ -37,16 +39,31 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
     particlesDevSettingsWrapper.appendChild(view.boardDebug)
     particlesDevSettingsWrapper.appendChild(debugOptions.rendered)
   }
+  private val mistakes = div(cls := "mistakes")("0").render
+  private val time = div(cls := "time")("0:00").render
 
-
-  // These are what can update based on the user's actions
+  // These are what can update based on the user's actions, everything else is immutable
   private var boardState = init
   private var view: BoardStateView = BoardStateView.create(board, init, clues, this)
+  private var solved = false
+  private var started = false
+  private var mistakesCount = 0
+  private[ui] val effects = new Effects(squareSizePixels = UIPlayer.SQUARE_SIZE, boardSize, boardSize)
 
   private val rendered: Div = div(cls := "really-top")(
     particlesDevSettingsWrapper,
     particlesDevSettingsShow,
     log.rendered,
+    div(cls := "time-and-mistakes")(
+      div(cls := "time-holder")(
+        div(cls := "time-label", "Time"),
+        time
+      ),
+      div(cls := "mistakes-holder")(
+        div(cls := "mistakes-label", "Mistakes"),
+        mistakes
+      ),
+    ),
     div(cls := "top")(
       effects.rendered,
       viewWrapper
@@ -57,6 +74,8 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
   container.appendChild(rendered)
 
   override def onLeftClick(row: Int, col: Int): Unit = {
+    handleStarted()
+
     System.out.println(s"Square clicked $row $col")
     PlayerActionHandler.squareMarkAttempt(board, boardState, row, col) match {
 
@@ -69,6 +88,8 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
 
       case v: PlayerActionFailure =>
         effects.animateSquareMarkFailure(row, col)
+        mistakesCount += 1
+        mistakes.textContent = mistakesCount.toString
 
       case _ =>
         println("no op")
@@ -79,6 +100,8 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
   }
 
   override def onRightClick(row: Int, col: Int): Unit = {
+    handleStarted()
+
     System.out.println(s"Square right clicked $row $col")
     PlayerActionHandler.squareDeleteAttempt(board, boardState, row, col) match {
 
@@ -90,6 +113,8 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
 
       case v: PlayerActionFailure =>
         effects.animateSquareDeleteFailure(row, col)
+        mistakesCount += 1
+        mistakes.textContent = mistakesCount.toString
 
       case _ =>
     }
@@ -101,7 +126,6 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
     checkSolved()
   }
 
-  private var solved = false
 
   def checkSolved(): Unit = {
     // Safety check is to prevent a drag across already marked squares completing the puzzle and causing multiple celebrations
@@ -128,6 +152,28 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
 
   override def clearOverlay(): Unit = {
     effects.clearOverlay()
+  }
+
+  def handleStarted(): Unit = {
+    if (!started) {
+      started = true
+      val startTime = new Date().getTime()
+      keepUpdatingTimer(startTime)
+    }
+  }
+
+  def keepUpdatingTimer(startTime: Long): Unit = {
+    val curTime = new Date().getTime()
+    val timeElapsedSecs = (curTime - startTime) / 1000
+    val timeElapsedMod = timeElapsedSecs % 60
+    val timeElapsedMins = timeElapsedSecs / 60
+    time.textContent = timeElapsedMins.toString + ":" + timeElapsedMod.formatted("%02d")
+
+    if (!solved) {
+      setTimeout(1000) {
+        keepUpdatingTimer(startTime)
+      }
+    }
   }
 }
 

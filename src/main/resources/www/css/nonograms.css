@@ -14,7 +14,8 @@
 .square-failure-anim,
 .square-marked,
 .square-overlay,
-.clues-clue {
+.clues-clue,
+.time-and-mistakes {
   width: 40px;
   height: 40px;
   padding: 5px !important;
@@ -71,7 +72,8 @@
   display: flex;
   margin-left: 5px;
 }
-.clues-clue {
+.clues-clue,
+.time-and-mistakes {
   font-family: 'Bangers', cursive;
   font-size: 25px;
   color: #f4bf9c;
@@ -155,4 +157,24 @@
   text-align: center;
   z-index: 500;
   position: absolute;
+}
+.time-and-mistakes {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.time-holder {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  margin-right: 40px;
+}
+.mistakes-holder {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.time-label,
+.mistakes-label {
+  margin-right: 20px;
 }

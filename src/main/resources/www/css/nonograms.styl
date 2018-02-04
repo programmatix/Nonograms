@@ -79,7 +79,7 @@ $boxSize = 40px
   margin-left 5px
 }
 
-  $clues-color= #f4bf9c
+$clues-color = #f4bf9c
 
 .clues-clue {
   @extend .square-sizing
@@ -183,4 +183,26 @@ $count-overlay-text-color = darken(orange, 20)
   text-align center
   z-index 500
   position absolute
+}
+
+.time-and-mistakes {
+  @extends .clues-clue
+  flexbox(flex)
+}
+
+.time-holder {
+  flexbox(flex)
+  margin-right: 40px
+}
+
+.mistakes-holder {
+  flexbox(flex)
+}
+
+.time-label {
+  margin-right: 20px
+}
+
+.mistakes-label {
+  @extends .time-label
 }
