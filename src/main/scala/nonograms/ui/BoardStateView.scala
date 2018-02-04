@@ -33,20 +33,21 @@ case class SquareView(state: SquareState, row: Int, col: Int, onLeftClick: (Int,
   }
 
   val rendered: Div = div(cls := clas,
-    attr("onContextMenu") := ((event: Event) => {
+    onclick := (() => {
+      onLeftClick(row, col)
+    })).render
+
+  rendered.oncontextmenu = (event: Event) => {
       println("right click")
       onRightClick(row, col)
       // Don't show the context menu
       event.preventDefault()
-    }),
-    onclick := (() => {
-      onLeftClick(row, col)
-    })).render
+    }
 }
 
 case class BoardStateView(board: Board, bs: BoardState, clues: Clues, handler: BoardActionHandler) {
-  private val boardDebug = div(cls := "board-debug").render
-  boardDebug.innerHTML = board.toString.replace("\r\n", "\n").replace("\n", "<br>")
+  val boardDebug = div(cls := "board-debug").render
+  boardDebug.innerHTML = "Board:<br>" + board.toString.replace("\r\n", "\n").replace("\n", "<br>")
 
   private val data: Vector2Dim[SquareView] = {
     val out = ArrayBuffer.empty[ArrayBuffer[SquareView]]
@@ -94,8 +95,7 @@ case class BoardStateView(board: Board, bs: BoardState, clues: Clues, handler: B
       squares,
       rowsRendered
     ),
-    colsRendered,
-    boardDebug
+    colsRendered
   ).render
 
 }

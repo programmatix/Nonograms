@@ -28,6 +28,7 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
     val particlesDevSettings = new ParticlesDevSettings((ps) => particles.settingsChanged(ps))
     particlesDevSettingsShow.style.display = "none"
     particlesDevSettingsWrapper.appendChild(particlesDevSettings.rendered)
+    particlesDevSettingsWrapper.appendChild(view.boardDebug)
   }
 
   // These are what can update based on the user's actions
@@ -70,9 +71,15 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
   override def onRightClick(row: Int, col: Int): Unit = {
     System.out.println(s"Square right clicked $row $col")
     PlayerActionHandler.squareDeleteAttempt(board, boardState, row, col) match {
+
       case v: PlayerActionSuccess =>
         boardState = boardState.delete(row, col)
+        while (viewWrapper.hasChildNodes()) viewWrapper.removeChild(viewWrapper.lastChild)
+        viewWrapper.appendChild(view.rendered)
+        particles.animateSquareMarkSuccess(row, col)
+
       case v: PlayerActionFailure =>
+        particles.animateSquareMarkFailure(row, col)
 
       case _ =>
     }

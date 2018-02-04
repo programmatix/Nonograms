@@ -1,15 +1,12 @@
 # Nonograms
-An implementation of the game Nonograms, in Scala.
+An implementation of the puzzle game Nonograms, in Scala.
 
 The engine is completely immutable, and all components are nicely separated with no strong binding between UI and game logic.
 
 ## Status
-Cannot play yet.
+Playable.
 
-The solver AI is coming along but nowhere near complete.
-Need this to create solvable levels for playing.
-
-Scala.JS widget to display the AI's progress. 
+The solver AI is coming along and can create solvable 10x10 puzzles usually in 20 iterations or less, but it could be a whole lot smarter. 
 
 ## Usage
 Should build fine.  Then open in Chrome:
