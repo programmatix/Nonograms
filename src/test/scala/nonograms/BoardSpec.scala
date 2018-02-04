@@ -202,8 +202,8 @@ class BoardSpec extends FunSuite {
 
   test("flip vertically") {
     val board = TestUtils.create(
-      """-X--
-        |---X""".stripMargin)._2
+      """-M--
+        |---M""".stripMargin)._2
     val flipped = board.flipVertically()
     assert (TestUtils.untd(flipped,0,0))
     assert (TestUtils.untd(flipped,0,1))

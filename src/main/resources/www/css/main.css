@@ -11,15 +11,18 @@
 .square,
 .square-untouched,
 .square-deleted,
+.square-failure-anim,
 .square-marked,
 .clues-clue {
   width: 50px;
   height: 50px;
   padding: 5px !important;
+  position: relative;
 }
 .square,
 .square-untouched,
 .square-deleted,
+.square-failure-anim,
 .square-marked {
   border: 1px solid #fff;
   border-color: rgba(0,0,0,0.2);
@@ -48,6 +51,9 @@
 .square-deleted {
   background-color: #b6bdbd;
 }
+.square-failure-anim {
+  background-color: #bd1e13;
+}
 .square-marked {
   background-color: #b7dcf4;
 }
@@ -74,4 +80,39 @@
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
+}
+.particle {
+  z-index: 10000;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #808080;
+  opacity: 0.4;
+}
+.particle-success {
+  background-color: #00f;
+  border: 1px solid #00c;
+}
+.particle-failure {
+  background-color: #f00;
+  border: 1px solid #c00;
+}
+.particle-dead {
+  display: none;
+}
+.particle-board {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.view-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.top {
+  position: relative;
+}
+.particle-settings {
+  z-index: 1000000;
 }

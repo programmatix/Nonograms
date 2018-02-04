@@ -9,6 +9,7 @@ object UIMain {
 
   @JSExport
   def main(containerId: String): Unit = {
-    new UISolver(containerId)
+//    new UISolver(containerId)
+    new UIPlayer(containerId)
   }
 }
