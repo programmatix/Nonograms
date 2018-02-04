@@ -8,9 +8,16 @@ import org.scalajs.dom.html.Div
 import scalatags.JsDom.all._
 
 
+object UIPlayer {
+  val BOARD_SIZE = 10
+  // Needs to sync up with css
+  val SQUARE_SIZE = 40
+
+}
+
 // For someone playing a Nonograms
 class UIPlayer(containerId: String) extends BoardActionHandler {
-  private val boardSize = 10
+  private val boardSize = UIPlayer.BOARD_SIZE
   private val created = Creator.createRandomSolvable(CreatorParams(boardSize, boardSize))
   println(s"Took ${created.iterations} iterations to create board of size $boardSize")
   private val board = created.board
@@ -19,8 +26,7 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
   private val container = dom.document.getElementById(containerId)
   private val log = new MessageLog()
   private val viewWrapper = div(cls := "view-wrapper").render
-  // 'squareSizePixels' needs to sync up with css
-  private[ui] val effects = new Effects(squareSizePixels = 50, boardSize, boardSize)
+  private[ui] val effects = new Effects(squareSizePixels = UIPlayer.SQUARE_SIZE, boardSize, boardSize)
   private val particlesDevSettingsWrapper = div().render
   private val particlesDevSettingsShow = button(cls := "btn btn-default", "Show dev settings").render
   particlesDevSettingsShow.onclick = (e) => {
@@ -68,6 +74,8 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
         println("no op")
     }
 
+    checkSolved()
+
   }
 
   override def onRightClick(row: Int, col: Int): Unit = {
@@ -93,10 +101,20 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
     checkSolved()
   }
 
+  private var solved = false
+
   def checkSolved(): Unit = {
-    val ret = BoardState.doesSolve(board, boardState)
-    if (ret.isSolved) {
-      effects.solved()
+    // Safety check is to prevent a drag across already marked squares completing the puzzle and causing multiple celebrations
+    if (!solved) {
+      val ret = BoardState.doesSolve(board, boardState)
+      if (ret.isSolved) {
+        solved = true
+        println("Solved!")
+        effects.solved()
+      }
+      else {
+        println(ret.fails.mkString(","))
+      }
     }
   }
 
