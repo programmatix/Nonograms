@@ -109,6 +109,10 @@
   background-color: #f00;
   border: 1px solid #c00;
 }
+.particle-solved {
+  background-color: #ff0;
+  border: 1px solid #cc0;
+}
 .particle-dead {
   display: none;
 }

@@ -20,14 +20,16 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
   private val log = new MessageLog()
   private val viewWrapper = div(cls := "view-wrapper").render
   // 'squareSizePixels' needs to sync up with css
-  private val overlay = new Overlay(squareSizePixels = 50, boardSize, boardSize)
+  private[ui] val effects = new Effects(squareSizePixels = 50, boardSize, boardSize)
   private val particlesDevSettingsWrapper = div().render
   private val particlesDevSettingsShow = button(cls := "btn btn-default", "Show dev settings").render
   particlesDevSettingsShow.onclick = (e) => {
-    val particlesDevSettings = new ParticlesDevSettings((ps) => overlay.settingsChanged(ps))
+    val debugOptions = new DebugOptions(this)
+    val particlesDevSettings = new ParticlesDevSettings((ps) => effects.settingsChanged(ps))
     particlesDevSettingsShow.style.display = "none"
     particlesDevSettingsWrapper.appendChild(particlesDevSettings.rendered)
     particlesDevSettingsWrapper.appendChild(view.boardDebug)
+    particlesDevSettingsWrapper.appendChild(debugOptions.rendered)
   }
 
 
@@ -40,7 +42,7 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
     particlesDevSettingsShow,
     log.rendered,
     div(cls := "top")(
-      overlay.rendered,
+      effects.rendered,
       viewWrapper
     )
   ).render
@@ -57,10 +59,10 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
         view = BoardStateView.update(view, boardState)
         while (viewWrapper.hasChildNodes()) viewWrapper.removeChild(viewWrapper.lastChild)
         viewWrapper.appendChild(view.rendered)
-        overlay.animateSquareMarkSuccess(row, col)
+        effects.animateSquareMarkSuccess(row, col)
 
       case v: PlayerActionFailure =>
-        overlay.animateSquareMarkFailure(row, col)
+        effects.animateSquareMarkFailure(row, col)
 
       case _ =>
         println("no op")
@@ -76,10 +78,10 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
         boardState = boardState.delete(row, col)
         while (viewWrapper.hasChildNodes()) viewWrapper.removeChild(viewWrapper.lastChild)
         viewWrapper.appendChild(view.rendered)
-        overlay.animateSquareDeleteSuccess(row, col)
+        effects.animateSquareDeleteSuccess(row, col)
 
       case v: PlayerActionFailure =>
-        overlay.animateSquareDeleteFailure(row, col)
+        effects.animateSquareDeleteFailure(row, col)
 
       case _ =>
     }
@@ -87,18 +89,27 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
     view = BoardStateView.update(view, boardState)
     while (viewWrapper.hasChildNodes()) viewWrapper.removeChild(viewWrapper.lastChild)
     viewWrapper.appendChild(view.rendered)
+
+    checkSolved()
+  }
+
+  def checkSolved(): Unit = {
+    val ret = BoardState.doesSolve(board, boardState)
+    if (ret.isSolved) {
+      effects.solved()
+    }
   }
 
   override def drawOverlayHorizontal(start: Int, end: Int, row: Int): Unit = {
-    overlay.drawOverlayHorizontal(start, end, row)
+    effects.drawOverlayHorizontal(start, end, row)
   }
 
   override def drawOverlayVertical(start: Int, end: Int, col: Int): Unit = {
-    overlay.drawOverlayVertical(start, end, col)
+    effects.drawOverlayVertical(start, end, col)
   }
 
   override def clearOverlay(): Unit = {
-    overlay.clearOverlay()
+    effects.clearOverlay()
   }
 }
 

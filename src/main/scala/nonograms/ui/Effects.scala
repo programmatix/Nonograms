@@ -20,7 +20,11 @@ case class ParticleSettings(gravity: Float = 1.0f,
                             minLifetimeMsecs: Int = 300,
                             cleanupEveryXMecs: Int = 500,
                             animate: Int = 1,
-                            updateDelta: Float = 0.05f)
+                            updateDelta: Float = 0.05f,
+                            numBurstsOnSolve: Int = 10,
+                            maxTimeMsecsUntilNextSolve: Int = 1000,
+                            celebrateForMsecs: Int = 20000
+                           )
 
 case class AnimationParticleBurst(clsName: String, top: Div, xPixels: Float, yPixels: Float, ps: ParticleSettings, onFinished: () => Unit) extends Animation {
 //  square.rendered.className = square.rendered.className + " square-success-anim"
@@ -53,7 +57,7 @@ case class AnimationParticleBurst(clsName: String, top: Div, xPixels: Float, yPi
 
   setTimeout(ps.minLifetimeMsecs) {
     done = true
-//    onFinished()
+    onFinished()
   }
 }
 
@@ -102,7 +106,7 @@ case class Particle(clsName: String, childOf: Div, startedTime: Long, initialX: 
 }
 
 // Animations and particles need to exist independent of BoardStateView, which gets destroyed
-class Overlay(val squareSizePixels: Int, boardWidthSquares: Int, boardHeightSquares: Int) {
+class Effects(val squareSizePixels: Int, boardWidthSquares: Int, boardHeightSquares: Int) {
   private val animations = ArrayBuffer.empty[Animation]
 
   // Give ourselves some padding so particles don't clip right off the edge
@@ -272,5 +276,38 @@ class Overlay(val squareSizePixels: Int, boardWidthSquares: Int, boardHeightSqua
 
   def clearOverlay(): Unit = {
     while (overlay.hasChildNodes()) overlay.removeChild(overlay.lastChild)
+  }
+
+  def solved(): Unit = {
+    val start = new Date().getTime()
+
+    def createBurst(): Unit = {
+      val x = Random.nextInt(squareSizePixels * boardWidthSquares) + offsetInSquaresX * squareSizePixels
+      val y = Random.nextInt(squareSizePixels * boardHeightSquares) + offsetInSquaresY * squareSizePixels
+
+      val clsName = Random.nextInt(3) match {
+        case 0 => "particle-solved"
+        case 1 => "particle-success"
+        case 2 => "particle-failure"
+      }
+
+      animations.append(AnimationParticleBurst(clsName, particles, x, y, particleSettings, () => {
+        println("Anim finished")
+//        val timeout = Random.nextInt(particleSettings.maxTimeMsecsUntilNextSolve / 2) + (particleSettings.maxTimeMsecsUntilNextSolve / 2)
+        val timeout = Random.nextInt(particleSettings.maxTimeMsecsUntilNextSolve)
+
+        setTimeout(timeout) {
+          val curTime = new Date().getTime
+
+          if (curTime - start <= particleSettings.celebrateForMsecs) {
+            createBurst()
+          }
+        }
+      }))
+    }
+
+    for (idx <- Range(0, particleSettings.numBurstsOnSolve)) {
+      createBurst()
+    }
   }
 }

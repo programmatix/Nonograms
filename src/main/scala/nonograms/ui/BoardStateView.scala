@@ -105,6 +105,9 @@ case class BoardStateView(board: Board, bs: BoardState, clues: Clues, handler: B
     val startX = e.clientX.toInt - squaresBounds.left.toInt
     val startY = e.clientY.toInt - squaresBounds.top.toInt
 
+    val maxSquareX = board.numCols()
+    val maxSquareY = board.numRows()
+
     var lastSquareX = startX
     var lastSquareY = startY
 
@@ -123,8 +126,8 @@ case class BoardStateView(board: Board, bs: BoardState, clues: Clues, handler: B
       val x = e.clientX.toInt - squaresBounds.left.toInt
       val y = e.clientY.toInt - squaresBounds.top.toInt
 
-      val squareX: Int = x / sizeOfSquare
-      val squareY: Int = y / sizeOfSquare
+      val squareX: Int = Math.min(Math.max(x / sizeOfSquare, 0), maxSquareX - 1)
+      val squareY: Int = Math.min(Math.max(y / sizeOfSquare, 0), maxSquareY - 1)
 
       if (lastSquareX != squareX || lastSquareY != squareY) {
         lastSquareX = squareX
@@ -161,8 +164,8 @@ case class BoardStateView(board: Board, bs: BoardState, clues: Clues, handler: B
       val x = e.clientX.toInt - squaresBounds.left.toInt
       val y = e.clientY.toInt - squaresBounds.top.toInt
 
-      val squareX: Int = Math.max(x / sizeOfSquare, 0)
-      val squareY: Int = Math.max(y / sizeOfSquare, 0)
+      val squareX: Int = Math.min(Math.max(x / sizeOfSquare, 0), maxSquareX - 1)
+      val squareY: Int = Math.min(Math.max(y / sizeOfSquare, 0), maxSquareY - 1)
 
       if (horizontalMode) {
         if (squareX >= startSquareX) {
