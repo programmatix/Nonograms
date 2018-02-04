@@ -299,6 +299,9 @@ case class BoardState(data: Vector2Dim[SquareState]) {
     BoardState(data.flipHorizontally())
   }
 
+  def flipVertically(): BoardState = {
+    BoardState(data.flipVertically())
+  }
 
   override def toString: String = {
     val sb = new StringBuilder

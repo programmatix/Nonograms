@@ -46,7 +46,7 @@ object Solver {
   // These are the algos to keep iterating until the puzzle is solved
   private val iterateAlgos = Vector[Algorithm](
 //    AlgoEachCluedStretchHasOwnRange(),
-    AlgoMinis(),
+    AlgoMinis(AlgoMini.all),
     AlgoStartOfClueAlreadyMarked(),
     AlgoNearStartOfClueAlreadyMarked(),
     AlgoDeleteRemainingFromSolvedLines(),

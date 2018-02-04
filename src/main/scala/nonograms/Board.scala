@@ -20,6 +20,10 @@ case class Board(board: Vector2Dim[Boolean]) {
     Board(board.flipHorizontally())
   }
 
+  def flipVertically(): Board = {
+    Board(board.flipVertically())
+  }
+
   override def toString: String = {
     val sb = new StringBuilder
     for (row <- Range(0, numRows())) {

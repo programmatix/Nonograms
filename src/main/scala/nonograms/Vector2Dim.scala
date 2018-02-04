@@ -52,6 +52,25 @@ case class Vector2Dim[T](data: Vector[Vector[T]]) {
 
     new Vector2Dim[T](mapped)
   }
+
+  def flipVertically(): Vector2Dim[T] = {
+    val copied = ArrayBuffer.empty[ArrayBuffer[T]]
+
+    for (r <- Range(0, rows)) {
+      val rowData = ArrayBuffer.empty[T]
+
+      for (c <- Range(0, cols)) {
+        val d = get(r, c)
+        rowData.append(d)
+      }
+
+      copied.insert(0, rowData)
+    }
+
+    val mapped = Vector2Dim.arrayBufferToVector(copied)
+
+    new Vector2Dim[T](mapped)
+  }
 }
 
 object Vector2Dim {

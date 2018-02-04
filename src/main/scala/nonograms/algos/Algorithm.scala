@@ -12,6 +12,14 @@ case class ForSolver(board: Board, clues: Clues, state: BoardState) {
       state.flipHorizontally()
     )
   }
+
+  def flipVertically(): ForSolver = {
+    ForSolver(
+      board.flipVertically(),
+      clues.flipVertically(),
+      state.flipVertically()
+    )
+  }
 }
 
 case class SolverResult(last: BoardState, bruteForceMaxLevel: Int = 0)
@@ -65,7 +73,7 @@ object Algorithm {
           v.newState
         case _                =>
           // Should succeed
-          assert(false)
+          assert(false, s"Failed to delete ${row},${col}")
           curState
       }
     }

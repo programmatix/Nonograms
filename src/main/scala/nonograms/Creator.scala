@@ -3,18 +3,20 @@ package nonograms
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
-case class CreatorParams(rows: Int, cols: Int)
+// 'probOfFilled' is 0-1 percentage chance of a square being filled
+case class CreatorParams(rows: Int, cols: Int, probOfFilled: Float = 0.7f)
 case class CreatorResult(board: Board, iterations: Int)
 
 // Makes up puzzles
 object Creator {
   def createRandom(params: CreatorParams): Board = {
     val board = ArrayBuffer.fill(params.rows, params.cols)(false)
+    val threshold = params.probOfFilled * 1000
 
     for (row <- Range(0, params.rows)) {
       for (col <- Range(0, params.cols)) {
-        val isFilled = Random.nextBoolean()
-        board(row)(col) = isFilled
+        val isFilled = Random.nextInt(1000) <= threshold
+          board(row)(col) = isFilled
       }
     }
 

@@ -7,6 +7,8 @@ case class LineClues(clues: Vector[Int]) {
   // Should always have at least "0"
   assert (clues.nonEmpty)
 
+  def flip(): LineClues = copy(clues = clues.reverse)
+
   // Empty row
   def isEmpty(): Boolean = clues.length == 1 && clues.head == 0
 
@@ -44,7 +46,10 @@ case class Clues(rows: Vector[LineClues], cols: Vector[LineClues]) {
 
   def getCol(col: Int) = cols(col)
 
-  def flipHorizontally(): Clues = Clues(rows.reverse, cols)
+  def flipHorizontally(): Clues = Clues(rows.map(v => v.flip()), cols)
+
+
+  def flipVertically(): Clues = Clues(rows, cols.map(v => v.flip()))
 }
 
 object Clues {
