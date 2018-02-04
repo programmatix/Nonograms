@@ -131,8 +131,6 @@ class Effects(val squareSizePixels: Int, boardWidthSquares: Int, boardHeightSqua
   particles.style.width = ((offsetInSquaresX*2 + boardWidthSquares) * squareSizePixels).toString + "px"
   particles.style.height = ((offsetInSquaresY*2 + boardHeightSquares) * squareSizePixels).toString + "px"
 
-//  overlay.style.top = (-offsetInSquaresY * squareSizePixels).toString + "px"
-//  overlay.style.left = (-offsetInSquaresX * squareSizePixels).toString + "px"
 
   overlay.style.width = ((offsetInSquaresX*2 + boardWidthSquares) * squareSizePixels).toString + "px"
   overlay.style.height = ((offsetInSquaresY*2 + boardHeightSquares) * squareSizePixels).toString + "px"
@@ -231,7 +229,7 @@ class Effects(val squareSizePixels: Int, boardWidthSquares: Int, boardHeightSqua
       val count = (start - end) + 1
       val view = div(cls := "count-overlay", count).render
       view.style.top = ((row + offsetInSquaresY) * squareSizePixels + countOffsetY).toString + "px"
-      view.style.left = ((end + 1 + offsetInSquaresX) * squareSizePixels - countOffsetX).toString + "px"
+      view.style.left = ((end + offsetInSquaresX) * squareSizePixels - countOffsetX).toString + "px"
 
       overlay.appendChild(view)
     }
@@ -268,7 +266,7 @@ class Effects(val squareSizePixels: Int, boardWidthSquares: Int, boardHeightSqua
         val count = (start - end) + 1
         val view = div(cls := "count-overlay", count).render
         view.style.left = ((col  + offsetInSquaresX) * squareSizePixels - countOffsetX).toString + "px"
-        view.style.top = ((end + offsetInSquaresY) * squareSizePixels + countOffsetY).toString + "px"
+        view.style.top = (((end - 1) + offsetInSquaresY) * squareSizePixels + countOffsetY).toString + "px"
 
         overlay.appendChild(view)
       }
@@ -292,7 +290,6 @@ class Effects(val squareSizePixels: Int, boardWidthSquares: Int, boardHeightSqua
       }
 
       animations.append(AnimationParticleBurst(clsName, particles, x, y, particleSettings, () => {
-        println("Anim finished")
 //        val timeout = Random.nextInt(particleSettings.maxTimeMsecsUntilNextSolve / 2) + (particleSettings.maxTimeMsecsUntilNextSolve / 2)
         val timeout = Random.nextInt(particleSettings.maxTimeMsecsUntilNextSolve)
 

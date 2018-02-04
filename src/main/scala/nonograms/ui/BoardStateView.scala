@@ -119,6 +119,16 @@ case class BoardStateView(board: Board, bs: BoardState, clues: Clues, handler: B
 
     println(s"onmousedown x=${startX} idx=${startSquareX} left=${squaresBounds.left} top=${squaresBounds.top}")
 
+    squares.onmouseleave = (e) => {
+      println("onleave")
+      handler.clearOverlay()
+
+      dom.document.onmousemove = (e) => {}
+      squares.onmouseleave = (e) => {}
+      squares.onmouseup = (e) => {}
+
+    }
+
     dom.document.onmousemove = (e) => {
       e.preventDefault()
       val squaresBounds = squares.getBoundingClientRect()
@@ -143,11 +153,11 @@ case class BoardStateView(board: Board, bs: BoardState, clues: Clues, handler: B
         }
 
         if (horizontalMode) {
-          handler.drawOverlayHorizontal(startSquareX, squareX, squareY)
+          handler.drawOverlayHorizontal(startSquareX, squareX, startSquareY)
           println(s"x ${startSquareX}-${squareX}")
         }
         else if (verticalMode) {
-          handler.drawOverlayVertical(startSquareY, squareY, squareX)
+          handler.drawOverlayVertical(startSquareY, squareY, startSquareX)
           println(s"y ${startSquareY}-${squareY}")
         }
         else {
@@ -170,28 +180,28 @@ case class BoardStateView(board: Board, bs: BoardState, clues: Clues, handler: B
       if (horizontalMode) {
         if (squareX >= startSquareX) {
           for (idx <- Range(startSquareX, squareX + 1)) {
-            if (leftMouse) handler.onLeftClick(squareY, idx)
-            else handler.onRightClick(squareY, idx)
+            if (leftMouse) handler.onLeftClick(startSquareY, idx)
+            else handler.onRightClick(startSquareY, idx)
           }
         }
         else {
           for (idx <- Range(squareX, startSquareX + 1)) {
-            if (leftMouse) handler.onLeftClick(squareY, idx)
-            else handler.onRightClick(squareY, idx)
+            if (leftMouse) handler.onLeftClick(startSquareY, idx)
+            else handler.onRightClick(startSquareY, idx)
           }
         }
       }
       else if (verticalMode) {
         if (squareY >= startSquareY) {
           for (idx <- Range(startSquareY, squareY + 1)) {
-            if (leftMouse) handler.onLeftClick(idx, squareX)
-            else handler.onRightClick(idx, squareX)
+            if (leftMouse) handler.onLeftClick(idx, startSquareX)
+            else handler.onRightClick(idx, startSquareX)
           }
         }
         else {
           for (idx <- Range(squareY, startSquareY + 1)) {
-            if (leftMouse) handler.onLeftClick(idx, squareX)
-            else handler.onRightClick(idx, squareX)
+            if (leftMouse) handler.onLeftClick(idx, startSquareX)
+            else handler.onRightClick(idx, startSquareX)
           }
         }
       }
