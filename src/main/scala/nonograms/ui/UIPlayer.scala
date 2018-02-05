@@ -14,7 +14,7 @@ import scalatags.JsDom.all._
 object UIPlayer {
   val BOARD_SIZE = 10
   // Needs to sync up with css
-  val SQUARE_SIZE = 40
+  val SQUARE_SIZE_PX = 40
 
 }
 
@@ -48,7 +48,7 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
   private var solved = false
   private var started = false
   private var mistakesCount = 0
-  private[ui] val effects = new Effects(squareSizePixels = UIPlayer.SQUARE_SIZE, boardSize, boardSize)
+  private[ui] val effects = new Effects(squareSizePixels = UIPlayer.SQUARE_SIZE_PX, boardSize, boardSize)
 
   private val rendered: Div = div(cls := "really-top")(
     particlesDevSettingsWrapper,
@@ -70,8 +70,22 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
     )
   ).render
 
-  viewWrapper.appendChild(view.rendered)
-  container.appendChild(rendered)
+  // Enough space for board, max number of clues for that size board (hardcoded to support a 10x10 board size), plus some wiggle room
+  private val minRequiredSpacePixels = UIPlayer.SQUARE_SIZE_PX * (UIPlayer.BOARD_SIZE + 5 + 1)
+  private val actualSpacePixels = container.getBoundingClientRect().width
+
+  println(s"minRequired=$minRequiredSpacePixels actual=$actualSpacePixels square=$UIPlayer.SQUARE_SIZE_PX")
+
+  if (actualSpacePixels < minRequiredSpacePixels) {
+    val tooSmall = div(cls := "too-small-wrapper")(
+      div(cls := "too-small", "Sorry, this game isn't mobile or tablet friendly: it requires a larger window to display, plus a mouse for right-clicking")
+    ).render
+    container.appendChild(tooSmall)
+  }
+  else {
+    viewWrapper.appendChild(view.rendered)
+    container.appendChild(rendered)
+  }
 
   override def onLeftClick(row: Int, col: Int): Unit = {
     handleStarted()

@@ -2,12 +2,17 @@
 <head>
     <script src="../../../../../target/scala-2.12/nonograms-fastopt.js"></script>
     <link href="../css/nonograms.css" rel="stylesheet" type="text/css">
-    <!--<link href="https://fonts.googleapis.com/css?family=Bangers" rel="stylesheet">-->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+
+    <!--Disable zooming -->
+    <!--Note this should also make the 300ms tap delay on mobile go away on Chrome and Firefox. It also removes pinch-zooming -->
+    <!-- https://developers.google.com/web/updates/2013/12/300ms-tap-delay-gone-away -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
     <title>Nonograms test</title>
 </head>
 <body>
-<div style="margin: 0 auto; max-width: 600px">
+<div style="margin: 0 auto; max-width: 800px">
     <div id="container">
     </div>
 

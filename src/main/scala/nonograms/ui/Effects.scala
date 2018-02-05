@@ -135,18 +135,6 @@ class Effects(val squareSizePixels: Int, boardWidthSquares: Int, boardHeightSqua
   overlay.style.width = ((offsetInSquaresX*2 + boardWidthSquares) * squareSizePixels).toString + "px"
   overlay.style.height = ((offsetInSquaresY*2 + boardHeightSquares) * squareSizePixels).toString + "px"
 
-  overlay.onmouseup = (e) => {
-    println("overlay onmouseup")
-  }
-
-  particles.onmouseup = (e) => {
-    println("particles onmouseup")
-  }
-
-  rendered.onmouseup = (e) => {
-    println("rendered onmouseup")
-  }
-
 
   def getCoords(row: Int, col: Int): (Int,Int) = {
     val x = ((col + offsetInSquaresX) * squareSizePixels) + squareSizePixels / 2

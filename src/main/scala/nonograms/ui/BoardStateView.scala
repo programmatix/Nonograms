@@ -92,7 +92,7 @@ case class BoardStateView(board: Board, bs: BoardState, clues: Clues, handler: B
   ).render
 
   var startCollecting = false
-  val sizeOfSquare = UIPlayer.SQUARE_SIZE
+  val sizeOfSquare = UIPlayer.SQUARE_SIZE_PX
 
   squares.onmousedown = (e) => {
     e.preventDefault()
