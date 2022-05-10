@@ -139,7 +139,7 @@ class AlgoSpec extends AnyFunSuite {
     val input = """XXO"""
     val board = Board.create(input)
     val state = TestUtils.mark(board, Vector((0,0)))
-    val result = Solver.applyAlgoWithState(AlgoStartOfClueAlreadyMarked(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoStartOfClueAlreadyMarked())), board, state)
 
     assert (result.last.get(0,0) == SquareStateMarked())
     assert (result.last.get(0,1) == SquareStateMarked())
@@ -153,7 +153,7 @@ class AlgoSpec extends AnyFunSuite {
         |O""".stripMargin
     val board = Board.create(input)
     val state = TestUtils.mark(board, Vector((0,0)))
-    val result = Solver.applyAlgoWithState(AlgoStartOfClueAlreadyMarked(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoStartOfClueAlreadyMarked())), board, state)
 
     assert (result.last.get(0,0) == SquareStateMarked())
     assert (result.last.get(1,0) == SquareStateMarked())
@@ -165,7 +165,7 @@ class AlgoSpec extends AnyFunSuite {
     val input = """OOOOOOOOXX"""
     val board = Board.create(input)
     val state = TestUtils.mark(board, Vector((0,9)))
-    val result = Solver.applyAlgoWithState(AlgoStartOfClueAlreadyMarked(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoStartOfClueAlreadyMarked())), board, state)
 
     assert (result.last.get(0,7) == SquareStateUntouched())
     assert (result.last.get(0,8) == SquareStateMarked())
@@ -176,7 +176,7 @@ class AlgoSpec extends AnyFunSuite {
     val input = """OOOOOOOXXX"""
     val board = Board.create(input)
     val state = TestUtils.mark(board, Vector((0,9)))
-    val result = Solver.applyAlgoWithState(AlgoStartOfClueAlreadyMarked(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoStartOfClueAlreadyMarked())), board, state)
 
     assert (result.last.get(0,6) == SquareStateUntouched())
     assert (result.last.get(0,7) == SquareStateMarked())
@@ -291,7 +291,7 @@ class AlgoSpec extends AnyFunSuite {
     val input = """XOX"""
     val board = Board.create(input)
     val state = TestUtils.mark(board, Vector((0,0), (0,2)))
-    val result = Solver.applyAlgoWithState(AlgoDeleteRemainingFromSolvedLines(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoDeleteRemainingFromSolvedLines())), board, state)
     val bs = result.last
 
     assert (TestUtils.mrkd(bs,0,0))
@@ -303,7 +303,7 @@ class AlgoSpec extends AnyFunSuite {
     val input = """OOOXXXOOOO"""
     val board = Board.create(input)
     val state = TestUtils.mark(board, Vector((0,3)))
-    val result = Solver.applyAlgoWithState(AlgoDeleteImpossibleSingle(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoDeleteImpossibleSingle())), board, state)
     val bs = result.last
 
     assert (TestUtils.deld(bs,0,0))
@@ -320,7 +320,7 @@ class AlgoSpec extends AnyFunSuite {
     val input = """OOOOOOOOXX"""
     val board = Board.create(input)
     val state = TestUtils.mark(board, Vector((0,8)))
-    val result = Solver.applyAlgoWithState(AlgoDeleteImpossibleSingle(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoDeleteImpossibleSingle())), board, state)
     val bs = result.last
 
     assert (TestUtils.deld(bs,0,0))
@@ -340,7 +340,7 @@ class AlgoSpec extends AnyFunSuite {
     val input = """OOOOOOOOXO"""
     val board = Board.create(input)
     val state = TestUtils.mark(board, Vector((0,8)))
-    val result = Solver.applyAlgoWithState(AlgoDeleteImpossibleSingle(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoDeleteImpossibleSingle())), board, state)
     val bs = result.last
 
     assert (TestUtils.deld(bs,0,0))
@@ -357,7 +357,7 @@ class AlgoSpec extends AnyFunSuite {
 
   test("AlgoOnlyInnerSingleGapsAfterDeletesAtEdges 1") {
     val (board, state) = TestUtils.create("""DX-XX""")
-    val result = Solver.applyAlgoWithState(AlgoOnlyInnerSingleGapsAfterDeletesAtEdges(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoOnlyInnerSingleGapsAfterDeletesAtEdges())), board, state)
     val bs = result.last
 
     assert (TestUtils.deld(bs,0,0))
@@ -369,7 +369,7 @@ class AlgoSpec extends AnyFunSuite {
 
   test("AlgoOnlyInnerSingleGapsAfterDeletesAtEdges 2") {
     val (board, state) = TestUtils.create("""X-XXD""")
-    val result = Solver.applyAlgoWithState(AlgoOnlyInnerSingleGapsAfterDeletesAtEdges(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoOnlyInnerSingleGapsAfterDeletesAtEdges())), board, state)
     val bs = result.last
 
     assert (TestUtils.mrkd(bs,0,0))
@@ -381,7 +381,7 @@ class AlgoSpec extends AnyFunSuite {
 
   test("AlgoOnlyInnerSingleGapsAfterDeletesAtEdges 3") {
     val (board, state) = TestUtils.create("""X-XX""")
-    val result = Solver.applyAlgoWithState(AlgoOnlyInnerSingleGapsAfterDeletesAtEdges(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoOnlyInnerSingleGapsAfterDeletesAtEdges())), board, state)
     val bs = result.last
 
     assert (TestUtils.mrkd(bs,0,0))
@@ -392,13 +392,13 @@ class AlgoSpec extends AnyFunSuite {
 
   test("AlgoOnlyInnerSingleGapsAfterDeletesAtEdges 4") {
     val (board, state) = TestUtils.create("""XDDX-X--XX""")
-    val result = Solver.applyAlgoWithState(AlgoOnlyInnerSingleGapsAfterDeletesAtEdges(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoOnlyInnerSingleGapsAfterDeletesAtEdges())), board, state)
     assert(result.last == state)
   }
 
   test("AlgoMarkObviousRemaining 1") {
     val (board, state) = TestUtils.create("""DX-MM""")
-    val result = Solver.applyAlgoWithState(AlgoOnlyInnerSingleGapsAfterDeletesAtEdges(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoOnlyInnerSingleGapsAfterDeletesAtEdges())), board, state)
     val bs = result.last
 
     assert (TestUtils.mrkd(bs,0,1))
@@ -406,7 +406,7 @@ class AlgoSpec extends AnyFunSuite {
 
   test("AlgoMarkObviousRemaining 2") {
     val (board, state) = TestUtils.create("""DX-XX""")
-    val result = Solver.applyAlgoWithState(AlgoOnlyInnerSingleGapsAfterDeletesAtEdges(), board, state)
+    val result = Solver.applyAlgoWithState(AlgoMinis(Seq(AlgoOnlyInnerSingleGapsAfterDeletesAtEdges())), board, state)
     val bs = result.last
 
     assert (TestUtils.mrkd(bs,0,1))
@@ -415,20 +415,20 @@ class AlgoSpec extends AnyFunSuite {
   }
 
   test("AlgoDeleteNextToCompletedRanges biggest") {
-    TestUtils.testAlgo(AlgoDeleteNextToCompletedRanges(), "-M---", "DMD--")
-    TestUtils.testAlgo(AlgoDeleteNextToCompletedRanges(), "M----", "MD---")
-    TestUtils.testAlgo(AlgoDeleteNextToCompletedRanges(), "----M", "---DM")
-    TestUtils.testAlgo(AlgoDeleteNextToCompletedRanges(), "--MMM--", "-DMMMD-")
-    TestUtils.testAlgo(AlgoDeleteNextToCompletedRanges(), "M--MM--", "M-DMMD-")
+    TestUtils.testAlgo(AlgoMinis(Seq(AlgoDeleteNextToCompletedRanges())), "-M---", "DMD--")
+    TestUtils.testAlgo(AlgoMinis(Seq(AlgoDeleteNextToCompletedRanges())), "M----", "MD---")
+    TestUtils.testAlgo(AlgoMinis(Seq(AlgoDeleteNextToCompletedRanges())), "----M", "---DM")
+    TestUtils.testAlgo(AlgoMinis(Seq(AlgoDeleteNextToCompletedRanges())), "--MMM--", "-DMMMD-")
+    TestUtils.testAlgo(AlgoMinis(Seq(AlgoDeleteNextToCompletedRanges())), "M--MM--", "M-DMMD-")
   }
 
   test("AlgoDeleteNextToCompletedRanges multiple all same") {
-    TestUtils.testAlgo(AlgoDeleteNextToCompletedRanges(), "-M--M--", "DMDDMD-")
-    TestUtils.testAlgo(AlgoDeleteNextToCompletedRanges(), "-MM--MM--", "DMMDDMMD-")
+    TestUtils.testAlgo(AlgoMinis(Seq(AlgoDeleteNextToCompletedRanges())), "-M--M--", "DMDDMD-")
+    TestUtils.testAlgo(AlgoMinis(Seq(AlgoDeleteNextToCompletedRanges())), "-MM--MM--", "DMMDDMMD-")
   }
 
   test("AlgoDeleteNextToCompletedRanges untouched") {
-    TestUtils.testAlgoUntouched(AlgoDeleteNextToCompletedRanges(), "DXM-D")
+    TestUtils.testAlgoUntouched(AlgoMinis(Seq(AlgoDeleteNextToCompletedRanges())), "DXM-D")
   }
 
   test("AlgoEachCluedStretchHasOwnRange simple") {

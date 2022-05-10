@@ -48,12 +48,6 @@ object Solver {
   // These are the algos to keep iterating until the puzzle is solved
   private val iterateAlgos = Vector[Algorithm](
     AlgoMinis(AlgoMini.all),
-    AlgoStartOfClueAlreadyMarked(),
-    AlgoDeleteRemainingFromSolvedLines(),
-    AlgoDeleteImpossibleSingle(),
-    AlgoOnlyInnerSingleGapsAfterDeletesAtEdges(),
-    AlgoMarkObviousRemaining(),
-    AlgoDeleteNextToCompletedRanges()
   )
 
   private val lastDitchAlgos = Vector[Algorithm](

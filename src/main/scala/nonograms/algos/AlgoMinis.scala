@@ -49,7 +49,14 @@ object AlgoMini {
     AlgoDeleteNoSpaceForSingle(),
     AlgoNearStartOfClueAlreadyMarked(),
     AlgoCannotReachOverSingleGap(),
-    AlgoDeleteNextToCompletedLargestClues())
+    AlgoDeleteNextToCompletedLargestClues(),
+    AlgoDeleteNextToCompletedRanges(),
+    AlgoStartOfClueAlreadyMarked(),
+    AlgoDeleteRemainingFromSolvedLines(),
+    AlgoDeleteImpossibleSingle(),
+    AlgoOnlyInnerSingleGapsAfterDeletesAtEdges(),
+    AlgoMarkObviousRemaining()
+  )
 }
 
 // A new setup for applying mini algos to a line.  Faster performance than multiple Algorithms:

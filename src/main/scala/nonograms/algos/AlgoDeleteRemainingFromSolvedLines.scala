@@ -6,47 +6,20 @@ import scala.collection.immutable
 import scala.collection.mutable.ArrayBuffer
 
 // "2,1" "MM--M-"   -> "MMDDMD"
-case class AlgoDeleteRemainingFromSolvedLines() extends Algorithm {
+case class AlgoDeleteRemainingFromSolvedLines() extends AlgoMini {
+  override def run(p: AlgoMiniParams): BoardState = {
+    var curState = p.startState
+    val clues = p.b.clues
+    val line = p.b.line
 
-  def solve(s: ForSolver): SolverResult = {
-    var curState = s.state
-
-    def handle(input: BoardState) = {
-      curState = input
-    }
-
-    // Abstract over rows and cols
-    def doLine(clues: LineClues, line: LineState, row: Option[Int], col: Option[Int], lineLength: Int) {
-      if (!line.isComplete()) {
-        if (clues.totalFilled() == line.totalMarked()) {
-          for (idx <- Range(0, lineLength)) {
-            if (line.squares(idx).isUntouched()) {
-              if (row.isDefined) {
-                handle(Algorithm.delete(row.get, idx, s.board, curState))
-              }
-              else {
-                handle(Algorithm.delete(idx, col.get, s.board, curState))
-              }
-            }
-          }
+    if (clues.totalFilled() == line.totalMarked()) {
+      for (idx <- Range(0, p.b.lineLength)) {
+        if (line.squares(idx).isUntouched()) {
+          curState = AlgoHelpers.delete(p.b, curState, adjust(idx, p))
         }
       }
     }
 
-    for (row <- Range(0, s.board.numRows())) {
-      val clues = s.clues.getRow(row)
-      val solved = s.state.getRow(row)
-      doLine(clues, solved, Some(row), None, s.board.numCols())
-    }
-
-    for (col <- Range(0, s.board.numCols())) {
-      val clues = s.clues.getCol(col)
-      val solved = s.state.getCol(col)
-      doLine(clues, solved, None, Some(col), s.board.numRows())
-    }
-
-    SolverResult(curState)
+    curState
   }
-
-
 }
