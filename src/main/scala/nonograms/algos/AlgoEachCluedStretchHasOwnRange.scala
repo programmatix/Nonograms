@@ -2,7 +2,14 @@ package nonograms.algos
 
 import nonograms._
 
-case class LineBasic(board: Board, row: Option[Int], col: Option[Int], line: LineState, clues: LineClues, lineLength: Int)
+case class LineBasic(board: Board,         // Always unpruned
+                     row: Option[Int],
+                     col: Option[Int],
+                     line: LineState,      // May be pruned
+                     clues: LineClues,     // May be pruned
+                     pruned: Option[Pruned] = None) {
+  def lineLength: Int = line.squares.length  // May be pruned
+}
 
 
 
@@ -32,14 +39,14 @@ case class AlgoEachCluedStretchHasOwnRange() extends Algorithm {
     for (row <- Range(0, s.board.numRows())) {
       val clues = s.clues.getRow(row)
       val solved = s.state.getRow(row)
-      val lb = LineBasic(s.board, Some(row), None, solved, clues, s.board.numCols())
+      val lb = LineBasic(s.board, Some(row), None, solved, clues)
       out = doLine(lb, out)
     }
 
     for (col <- Range(0, s.board.numCols())) {
       val clues = s.clues.getCol(col)
       val solved = s.state.getCol(col)
-      val lb = LineBasic(s.board, None, Some(col), solved, clues, s.board.numRows())
+      val lb = LineBasic(s.board, None, Some(col), solved, clues)
       out = doLine(lb, out)
     }
 

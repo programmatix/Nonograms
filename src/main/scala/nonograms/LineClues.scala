@@ -35,11 +35,6 @@ case class LineClues(clues: Vector[Int]) {
   override def toString = "[" + clues.mkString(",") + "]"
 }
 
-//object LineClues {
-//  def removeSolved(clues: LineClues, completedClues: Vector[Int]): LineClues = {
-//
-//  }
-//}
 
 case class Clues(rows: Vector[LineClues], cols: Vector[LineClues]) {
   def getRow(row: Int) = rows(row)
@@ -70,7 +65,7 @@ object Clues {
     generateClues(data)
   }
 
-  private def generateClues(in: Vector[Boolean]): LineClues = {
+  def generateClues(in: Vector[Boolean]): LineClues = {
     val out = ArrayBuffer.empty[Int]
     var len = 0
     for (i <- in.indices) {

@@ -9,7 +9,6 @@ import scala.collection.mutable.ArrayBuffer
 case class AlgoDeleteNoSpaceForSingle() extends Algorithm {
 
   def solve(s: ForSolver): SolverResult = {
-    val out = ArrayBuffer.empty[BoardState]
     var curState = s.state
 
     def handle(input: BoardState) = {

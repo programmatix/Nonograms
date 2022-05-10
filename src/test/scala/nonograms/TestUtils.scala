@@ -39,17 +39,21 @@ object TestUtils {
   // Handles 'D' and 'M' syntax in addition to standard board 'O' and 'X'
   // Also '-' is 'O'
   def create(inputRaw: String): (Board, BoardState) = {
-    val forBoard = inputRaw.replace('D','O').replace('M','X').replace('-', 'O')
+    val inputProcessed = inputRaw.trim().replace(" ", "")
+    val input = inputProcessed.replace("\r\n", "\n")
+    val forBoard = inputProcessed
+      .replace('D','O')
+      .replace('M','X')
+      .replace('-', 'O')
     val board = Board.create(forBoard)
 
-    val input = inputRaw.trim().replace("\r\n", "\n")
-    val rows = input.count((c) => c == '\n') + 1
-    val cols = if (inputRaw.contains('\n')) input.indexOf('\n') else inputRaw.length
+    val rows = inputProcessed.count((c) => c == '\n') + 1
+    val cols = if (inputProcessed.contains('\n')) input.indexOf('\n') else inputProcessed.length
     //    val board = Vector2Dim.create[Boolean](rows, cols, false)
 
     val boardState = ArrayBuffer.fill[SquareState](rows, cols)(SquareStateUntouched())
 
-    val ch = input.iterator
+    val ch = inputProcessed.iterator
     var row = 0
     var col = 0
     while (ch.hasNext) {

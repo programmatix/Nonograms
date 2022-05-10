@@ -1,5 +1,7 @@
 package nonograms
 
+import nonograms.algos.LineBasic
+
 import scala.collection.mutable.ArrayBuffer
 
 trait SquareState {
@@ -130,8 +132,8 @@ case class LineState(squares: Vector[SquareState]) {
     out
   }
 
-  // Range = a series of squares between Ds and the board edges.
-  // Strech = a series of marked squares
+  // Range = a series of squares between Ds.  E.g. it's a gap.  One or more clues could fit in that range.
+  // Stretch = a series of marked squares
 
   // Returns stretches between Ds and the board edges.  Ignores marked squares
   // "--D--" = [2,2]
@@ -255,6 +257,14 @@ case class LineState(squares: Vector[SquareState]) {
 
 // What's been done to the board
 case class BoardState(data: Vector2Dim[SquareState]) {
+  def getLine(b: LineBasic): LineState = {
+    b.row match {
+      case Some(row) => getRow(row)
+      case _ =>
+        getCol(b.col.get)
+    }
+  }
+
   def delete(row: Int, col: Int): BoardState = {
     val copied = data.set(row, col, SquareStateDeleted())
     BoardState(copied)

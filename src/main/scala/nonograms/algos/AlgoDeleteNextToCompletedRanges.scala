@@ -4,14 +4,13 @@ import nonograms.{BoardState, LineClues, LineState}
 
 import scala.collection.mutable.ArrayBuffer
 
-// Surround definitely completed ranges with blanks.  Currently only supports:
+// Surround definitely completed clues with blanks.  Currently only supports:
 // a) the biggest range only
 // b) if all ranges are same size
 // "1" "-M--" -> "DMD-"
 case class AlgoDeleteNextToCompletedRanges() extends Algorithm {
 
   def solve(s: ForSolver): SolverResult = {
-    val out = ArrayBuffer.empty[BoardState]
     var curState = s.state
 
     def handle(input: BoardState) = {

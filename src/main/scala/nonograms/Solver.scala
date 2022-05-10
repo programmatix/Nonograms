@@ -1,8 +1,8 @@
 package nonograms
 
 import java.util.Date
-
 import nonograms.algos._
+import nonograms.debug.BoardPrinter
 
 sealed trait SolverCommand
 
@@ -40,7 +40,9 @@ object Solver {
     AlgoClearEmptyLines(),
     AlgoFullLines(),
     AlgoOnlyInnerSingleGaps(),
-    AlgoMarkMiddleSingleClue()
+    AlgoMarkMiddleSingleClue(),
+    // AlgoMarkObvious included here since it doesn't look at board state
+    AlgoMinis(Seq(AlgoMarkObvious()))
   )
 
   // These are the algos to keep iterating until the puzzle is solved
@@ -75,18 +77,28 @@ object Solver {
   def solve(board: Board): Boolean = {
     var curState = BoardState.initialise(board)
     val clues = Clues.generateClues(board)
+    var done = false
 
     initialAlgos.foreach(algo => {
       curState = algo.solve(ForSolver(board, clues, curState)).last
     })
 
-    iterateAlgos.foreach(algo => {
-      curState = algo.solve(ForSolver(board, clues, curState)).last
-    })
+    BoardPrinter.print(curState, clues)
 
-    lastDitchAlgos.foreach(algo => {
-      curState = algo.solve(ForSolver(board, clues, curState)).last
-    })
+    while (!BoardState.doesSolve(board, curState).isSolved && !done) {
+      val lastBoardState = curState
+
+      iterateAlgos.foreach(algo => {
+        curState = algo.solve(ForSolver(board, clues, curState)).last
+        //BoardPrinter.print(curState, clues)
+      })
+
+      // Unable to improve the state
+      if (curState == lastBoardState) {
+        BoardPrinter.print(curState, clues)
+        done = true
+      }
+    }
 
     val solved = BoardState.doesSolve(board, curState)
     solved.isSolved

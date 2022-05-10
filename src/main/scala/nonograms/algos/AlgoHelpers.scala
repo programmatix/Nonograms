@@ -62,12 +62,15 @@ object AlgoHelpers {
     curState
   }
 
-  // Can delete everything else in the range
+  /** Can delete everything else in the range
+   * @param b may be pruned
+   * @param range has been mapped/depruned
+   */
   def rangeContainsOneClueWhichIsFullyMarked(b: LineBasic, start: BoardState, range: MarkRange): BoardState = {
     var out = start
 
     for (idx <- Range(range.fromIdx, range.toIdx + 1)) {
-      if (b.line.squares(idx).isUntouched()) {
+      if (start.getLine(b).squares(idx).isUntouched()) {
         if (b.row.isDefined) {
           out = handle(Algorithm.delete(b.row.get, idx, b.board, out))
         }
@@ -117,7 +120,7 @@ object AlgoHelpers {
     }
   }
 
-  // Sure that this stretch is complete (fullpy marked)
+  // Sure that this stretch is complete (fully marked)
   def stretchCompletesClue(b: LineBasic, start: BoardState, stretch: MarkRange): BoardState = {
     if (b.clues.clues.length == 1) {
       // The only clue is complete
@@ -137,7 +140,7 @@ object AlgoHelpers {
   }
 
   // We know each range either a) doesn't contain a mark and can be deleted or b) contains a mark AND exactly one clue
-  def eachRangeContainsZeroOrOneClues(b: LineBasic, start: BoardState, ranges: Vector[MarkRange]): BoardState = {
+  def eachRangeContainsZeroOrOneClues(b: LineBasic, start: BoardState, ranges: Seq[MarkRange]): BoardState = {
     var clueIdx = 0
     var out = start
 
@@ -170,12 +173,12 @@ object AlgoHelpers {
     else {
       // Range is bigger than the clue
 
-      if (b.line.squares(range.fromIdx).isMarked()) {
+      if (start.getLine(b).squares(range.fromIdx).isMarked()) {
         // Start of range is filled so we can do the rest of the range
         val out = markRange(b, start, range.fromIdx, range.fromIdx + clue)
         deleteRange(b, out, range.fromIdx + clue, range.toIdx + 1)
       }
-      else if (b.line.squares(range.toIdx).isMarked()) {
+      else if (start.getLine(b).squares(range.toIdx).isMarked()) {
         // Similarly if end of range is filled
         val out = markRange(b, start, range.toIdx - clue + 1, range.toIdx + 1)
         deleteRange(b, out, range.fromIdx, range.toIdx - clue + 1)
@@ -189,7 +192,7 @@ object AlgoHelpers {
           // Scan from left and see what can be filled in
           var idx = range.fromIdx
           while (idx <= range.toIdx) {
-            val square = b.line.squares(idx)
+            val square = start.getLine(b).squares(idx)
             assert(!square.isDeleted())
             if (square.isMarked()) {
               foundMarker = true
@@ -210,7 +213,7 @@ object AlgoHelpers {
           // Scan from right and see what can be filled in
           var idx = range.toIdx
           while (idx >= range.fromIdx) {
-            val square = b.line.squares(idx)
+            val square = start.getLine(b).squares(idx)
             assert(!square.isDeleted())
             if (square.isMarked()) {
               foundMarker = true

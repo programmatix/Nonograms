@@ -12,7 +12,7 @@ class SolverSpec extends AnyFunSuite {
                   |""".stripMargin
     val board = Board.create(input)
     val solved = Solver.solve(board)
-    assert(!solved)
+    assert(solved)
   }
 
   test("2") {
@@ -24,9 +24,7 @@ class SolverSpec extends AnyFunSuite {
                   |""".stripMargin
     val board = Board.create(input)
     val solved = Solver.solve(board)
-
-    // Is solvable one day
-    assert(!solved)
+    assert(solved)
   }
 
   test("3") {
@@ -38,8 +36,11 @@ class SolverSpec extends AnyFunSuite {
                   |""".stripMargin
     val board = Board.create(input)
     val solved = Solver.solve(board)
+    assert(solved)
+  }
 
-    // Is solvable one day
-    assert(!solved)
+  test("random") {
+    val board = Creator.createRandom(CreatorParams(20, 20))
+    assert(Solver.solve(board))
   }
 }
