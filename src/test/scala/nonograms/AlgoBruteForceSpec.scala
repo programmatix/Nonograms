@@ -1,9 +1,9 @@
 package nonograms
 
 import nonograms.algos.AlgoBruteForce
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class AlgoBruteForceSpec extends FunSuite {
+class AlgoBruteForceSpec extends AnyFunSuite {
   test("1x1") {
     TestUtils.testAlgo(AlgoBruteForce(), "O", "D")
     TestUtils.testAlgo(AlgoBruteForce(), "X", "M")

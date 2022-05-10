@@ -1,8 +1,8 @@
 package nonograms
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class FullBoardSpec extends FunSuite {
+class FullBoardSpec extends AnyFunSuite {
   test("1") {
     val raw = """-XX---X---
                 |X-X-XX-XXX

@@ -1,8 +1,8 @@
 package nonograms
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class CluesSpec extends FunSuite {
+class CluesSpec extends AnyFunSuite {
   test("generate clues") {
     val board = TestUtils.createBasicBoard()
     val clues = Clues.generateClues(board)

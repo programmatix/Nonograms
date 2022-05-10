@@ -388,7 +388,7 @@ object BoardState {
       }
     }
 
-    SolveResult(result)
+    SolveResult(result.toSeq)
   }
 
 }

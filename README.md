@@ -1,10 +1,13 @@
 # Nonograms
-An implementation of the puzzle game Nonograms, in Scala, transpiled to Javascript with ScalaJS.
+An implementation of the puzzle game Nonograms, in Scala.
 
 The engine is completely immutable, and all components are nicely separated with no strong binding between UI and game logic.
 
+There is a web UI, produced by transpiling Scala UI logic into Javascript with ScalaJS.
+
 ## Status
 Playable.
+Update: due to some missing code, probably not checked-in and now lost, the game is runnable but not playable - e.g. mouse clicks will not do anything.
 
 The solver AI is coming along and can find a solvable 10x10 puzzle usually given 20 random boards or less, but it could be a lot smarter. 
 
@@ -13,7 +16,8 @@ Clone the project.
 
 ```sbt fastOptJS```
 
-Then open src/main/resources/www/html/index.html in Chrome
+Then open src/main/resources/www/html/index.html in Chrome.  You should see a display like this:
+![](image.png)
 
 ## Deploying to Personal Site
 (These instructions are just for me)

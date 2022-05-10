@@ -4,7 +4,6 @@ import java.util.Date
 import scala.scalajs.js.timers.setTimeout
 
 import nonograms._
-import nonograms.playing._
 import org.scalajs.dom
 import org.scalajs.dom.html.Div
 
@@ -32,12 +31,12 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
   private val particlesDevSettingsWrapper = div().render
   private val particlesDevSettingsShow = button(cls := "btn btn-default", "Show dev settings").render
   particlesDevSettingsShow.onclick = (e) => {
-    val debugOptions = new DebugOptions(this)
+    //val debugOptions = new DebugOptions(this)
     val particlesDevSettings = new ParticlesDevSettings((ps) => effects.settingsChanged(ps))
     particlesDevSettingsShow.style.display = "none"
     particlesDevSettingsWrapper.appendChild(particlesDevSettings.rendered)
     particlesDevSettingsWrapper.appendChild(view.boardDebug)
-    particlesDevSettingsWrapper.appendChild(debugOptions.rendered)
+    //particlesDevSettingsWrapper.appendChild(debugOptions.rendered)
   }
   private val mistakes = div(cls := "mistakes")("0").render
   private val time = div(cls := "time")("0:00").render
@@ -91,23 +90,24 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
     handleStarted()
 
     System.out.println(s"Square clicked $row $col")
-    PlayerActionHandler.squareMarkAttempt(board, boardState, row, col) match {
-
-      case v: PlayerActionSuccess =>
-        boardState = boardState.mark(row, col)
-        view = BoardStateView.update(view, boardState)
-        while (viewWrapper.hasChildNodes()) viewWrapper.removeChild(viewWrapper.lastChild)
-        viewWrapper.appendChild(view.rendered)
-        effects.animateSquareMarkSuccess(row, col)
-
-      case v: PlayerActionFailure =>
-        effects.animateSquareMarkFailure(row, col)
-        mistakesCount += 1
-        mistakes.textContent = mistakesCount.toString
-
-      case _ =>
-        println("no op")
-    }
+    // TODO: appears to be unchecked-in code...
+//    PlayerActionHandler.squareMarkAttempt(board, boardState, row, col) match {
+//
+//      case v: PlayerActionSuccess =>
+//        boardState = boardState.mark(row, col)
+//        view = BoardStateView.update(view, boardState)
+//        while (viewWrapper.hasChildNodes()) viewWrapper.removeChild(viewWrapper.lastChild)
+//        viewWrapper.appendChild(view.rendered)
+//        effects.animateSquareMarkSuccess(row, col)
+//
+//      case v: PlayerActionFailure =>
+//        effects.animateSquareMarkFailure(row, col)
+//        mistakesCount += 1
+//        mistakes.textContent = mistakesCount.toString
+//
+//      case _ =>
+//        println("no op")
+//    }
 
     checkSolved()
 
@@ -117,21 +117,22 @@ class UIPlayer(containerId: String) extends BoardActionHandler {
     handleStarted()
 
     System.out.println(s"Square right clicked $row $col")
-    PlayerActionHandler.squareDeleteAttempt(board, boardState, row, col) match {
-
-      case v: PlayerActionSuccess =>
-        boardState = boardState.delete(row, col)
-        while (viewWrapper.hasChildNodes()) viewWrapper.removeChild(viewWrapper.lastChild)
-        viewWrapper.appendChild(view.rendered)
-        effects.animateSquareDeleteSuccess(row, col)
-
-      case v: PlayerActionFailure =>
-        effects.animateSquareDeleteFailure(row, col)
-        mistakesCount += 1
-        mistakes.textContent = mistakesCount.toString
-
-      case _ =>
-    }
+    // TODO: appears to be unchecked-in code...
+//    PlayerActionHandler.squareDeleteAttempt(board, boardState, row, col) match {
+//
+//      case v: PlayerActionSuccess =>
+//        boardState = boardState.delete(row, col)
+//        while (viewWrapper.hasChildNodes()) viewWrapper.removeChild(viewWrapper.lastChild)
+//        viewWrapper.appendChild(view.rendered)
+//        effects.animateSquareDeleteSuccess(row, col)
+//
+//      case v: PlayerActionFailure =>
+//        effects.animateSquareDeleteFailure(row, col)
+//        mistakesCount += 1
+//        mistakes.textContent = mistakesCount.toString
+//
+//      case _ =>
+//    }
 
     view = BoardStateView.update(view, boardState)
     while (viewWrapper.hasChildNodes()) viewWrapper.removeChild(viewWrapper.lastChild)

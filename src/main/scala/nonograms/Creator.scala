@@ -9,6 +9,7 @@ case class CreatorResult(board: Board, iterations: Int)
 
 // Makes up puzzles
 object Creator {
+  // Doesn't guarantee solvability
   def createRandom(params: CreatorParams): Board = {
     val board = ArrayBuffer.fill(params.rows, params.cols)(false)
     val threshold = params.probOfFilled * 1000
@@ -24,6 +25,7 @@ object Creator {
     Board(mapped)
   }
 
+  // Does guarantee solvability
   def createRandomSolvable(params: CreatorParams): CreatorResult = {
     var out: Option[Board] = Option.empty
     var iterations = 0

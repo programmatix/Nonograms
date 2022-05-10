@@ -1,8 +1,8 @@
 package nonograms
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class BoardSpec extends FunSuite {
+class BoardSpec extends AnyFunSuite {
   private def createBasicBoard() = TestUtils.createBasicBoard()
 
   test("create") {

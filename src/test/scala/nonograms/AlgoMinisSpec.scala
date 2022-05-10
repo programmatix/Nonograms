@@ -1,9 +1,9 @@
 package nonograms
 
 import nonograms.algos.{AlgoCheckUnambiguousClueNearStart, AlgoMinis}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class AlgoMinisSpec extends FunSuite {
+class AlgoMinisSpec extends AnyFunSuite {
   test("checkUnambiguousClueNearEdge") {
     TestUtils.testAlgo(AlgoMinis(Seq(AlgoCheckUnambiguousClueNearStart())), "--MX---M--", "D-M----M--")
     TestUtils.testAlgo(AlgoMinis(Seq(AlgoCheckUnambiguousClueNearStart())), "-M-----M--", "DMD----M--")

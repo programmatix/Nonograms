@@ -1,8 +1,8 @@
 package nonograms
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class SolverSpec extends FunSuite {
+class SolverSpec extends AnyFunSuite {
   test("1") {
     val input = """X-X--
                   |-XX--

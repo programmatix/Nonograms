@@ -1,8 +1,8 @@
 package nonograms
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class CreatorSpec extends FunSuite {
+class CreatorSpec extends AnyFunSuite {
   test("random 5x5") {
     val board = Creator.createRandomSolvable(CreatorParams(5,5))
     assert (board.iterations < 10000)

@@ -1,9 +1,9 @@
 package nonograms
 
 import nonograms.algos._
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class AlgoSpec extends FunSuite {
+class AlgoSpec extends AnyFunSuite {
   test("clear empty lines") {
     val board = TestUtils.createBasicBoard()
     val result = Solver.applyAlgo(AlgoClearEmptyLines(), board)
