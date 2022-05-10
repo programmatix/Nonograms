@@ -12,10 +12,4 @@ class AlgoMinisSpec extends AnyFunSuite {
     TestUtils.testAlgo(AlgoMinis(Seq(AlgoCheckUnambiguousClueNearStart())), "-M--------", "DMDDDDDDDD")
     TestUtils.testAlgo(AlgoMinis(Seq(AlgoCheckUnambiguousClueNearStart())), "--MX---M--".reverse, "D-M----M--".reverse)
   }
-
-  test("any") {
-    TestUtils.testAlgo(AlgoMinis(AlgoMini.all), "M D M D X M M M D -", "MDMDMMMMDD", true)
-
-  }
-
 }

@@ -2,14 +2,11 @@ package nonograms.algos
 
 import nonograms._
 
-import scala.collection.mutable.ArrayBuffer
-
 // Handle "3" in a 5row -> "??X??"
 // Handle "4" in a 5row -> "?XXX?"
 case class AlgoMarkMiddleSingleClue() extends Algorithm {
 
   def solve(s: ForSolver): SolverResult = {
-    val out = ArrayBuffer.empty[BoardState]
     var curState = s.state
 
     def handle(input: BoardState) = {

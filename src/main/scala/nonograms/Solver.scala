@@ -47,13 +47,10 @@ object Solver {
 
   // These are the algos to keep iterating until the puzzle is solved
   private val iterateAlgos = Vector[Algorithm](
-//    AlgoEachCluedStretchHasOwnRange(),
     AlgoMinis(AlgoMini.all),
     AlgoStartOfClueAlreadyMarked(),
-    AlgoNearStartOfClueAlreadyMarked(),
     AlgoDeleteRemainingFromSolvedLines(),
     AlgoDeleteImpossibleSingle(),
-    AlgoDeleteNoSpaceForSingle(),
     AlgoOnlyInnerSingleGapsAfterDeletesAtEdges(),
     AlgoMarkObviousRemaining(),
     AlgoDeleteNextToCompletedRanges()
@@ -68,9 +65,9 @@ object Solver {
     applyAlgoWithState(algo, board, curState)
   }
 
-  def applyAlgoWithState(algo: Algorithm, board: Board, curState: BoardState): SolverResult = {
+  def applyAlgoWithState(algo: Algorithm, board: Board, curState: BoardState, params: SolverParams = SolverParams()): SolverResult = {
     val clues = Clues.generateClues(board)
-    algo.solve(ForSolver(board, clues, curState))
+    algo.solve(ForSolver(board, clues, curState, params))
   }
 
   // Returns true iff solvable

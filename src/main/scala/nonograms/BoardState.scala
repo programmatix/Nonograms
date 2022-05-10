@@ -18,6 +18,16 @@ case class SquareStateMarked() extends SquareState
 
 case class SquareStateUntouched() extends SquareState
 
+sealed trait Run {
+  val index: Int
+  val length: Int
+  def end = index + length
+}
+case class Untouched(index: Int, length: Int) extends Run
+case class Marked(index: Int, length: Int) extends Run
+case class Deleted(index: Int, length: Int) extends Run
+
+
 // toIdx is inclusive
 case class MarkRange(fromIdx: Int, toIdx: Int, marked: Int) {
   def len(): Int = (toIdx - fromIdx) + 1

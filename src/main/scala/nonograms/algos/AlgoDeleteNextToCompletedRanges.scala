@@ -2,8 +2,6 @@ package nonograms.algos
 
 import nonograms.{BoardState, LineClues, LineState}
 
-import scala.collection.mutable.ArrayBuffer
-
 // Surround definitely completed clues with blanks.  Currently only supports:
 // a) the biggest range only
 // b) if all ranges are same size

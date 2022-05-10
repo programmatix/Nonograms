@@ -2,9 +2,6 @@ package nonograms.algos
 
 import nonograms.{BoardState, LineClues, LineState}
 
-import scala.collection.immutable
-import scala.collection.mutable.ArrayBuffer
-
 // If it's trivially obvious what needs to be marked:
 // a) The number of ranges left == the number of blocks
 // b) Each range left is the same length as its corresponding block
@@ -13,7 +10,6 @@ import scala.collection.mutable.ArrayBuffer
 case class AlgoMarkObviousRemaining() extends Algorithm {
 
   def solve(s: ForSolver): SolverResult = {
-    val out = ArrayBuffer.empty[BoardState]
     var curState = s.state
 
     def handle(input: BoardState) = {

@@ -2,9 +2,11 @@ package nonograms.algos
 
 import nonograms._
 
+case class SolverParams(allowPruning: Boolean = true)
+
 // Note, although the board is passed in, no algorithm is allowed to peek.  Algos have to solve in the same way a human
 // could
-case class ForSolver(board: Board, clues: Clues, state: BoardState) {
+case class ForSolver(board: Board, clues: Clues, state: BoardState, params: SolverParams = SolverParams()) {
   def flipHorizontally(): ForSolver = {
     ForSolver(
       board.flipHorizontally(),

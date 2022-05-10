@@ -193,7 +193,9 @@ object AlgoHelpers {
           var idx = range.fromIdx
           while (idx <= range.toIdx) {
             val square = start.getLine(b).squares(idx)
-            assert(!square.isDeleted())
+            if (!square.isDeleted()) {
+              assert(!square.isDeleted())
+            }
             if (square.isMarked()) {
               foundMarker = true
               val canFill = clue - (idx - range.fromIdx)

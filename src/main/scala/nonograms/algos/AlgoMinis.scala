@@ -2,6 +2,8 @@ package nonograms.algos
 
 import nonograms._
 
+import scala.collection.mutable.ArrayBuffer
+
 case class Pruned(lineDataOrig: Vector[Boolean],
                   lineDataPruned: Vector[Boolean],
                   lineStateOrig: LineState,
@@ -14,7 +16,9 @@ case class AlgoMiniParams(b: LineBasic,
                           startState: BoardState,
                           // Marked stretches
                           stretches: Vector[MarkRange],
+                          // May better be called gaps
                           ranges: Vector[MarkRange],
+                          runs: Seq[Run],
                           // Number of ranges that contain one or more marks
                           rangesWithMarks: Int,
                           isReversed: Boolean)
@@ -41,7 +45,11 @@ object AlgoMini {
   val all = Vector(AlgoCheckUnambiguousClueNearStart(),
     AlgoEachRangeContainsZeroOrOneClues(),
     AlgoGapAssigner(),
-    AlgoDeleteEdgesIfNoSpaceInThereForFirstClue())
+    AlgoDeleteEdgesIfNoSpaceInThereForFirstClue(),
+    AlgoDeleteNoSpaceForSingle(),
+    AlgoNearStartOfClueAlreadyMarked(),
+    AlgoCannotReachOverSingleGap(),
+    AlgoDeleteNextToCompletedLargestClues())
 }
 
 // A new setup for applying mini algos to a line.  Faster performance than multiple Algorithms:
@@ -52,7 +60,38 @@ object AlgoMini {
 // a) The board is flipped so each algorithm only has to be written once
 
 case class AlgoMinis(algosToUse: Seq[AlgoMini]) extends Algorithm {
+  def analyseLine(b: LineBasic): Seq[Run] = {
+    var index = 0
+    var state: Class[_] = b.line.squares(0).getClass
+    var runLength = 0
+    var runIndex = 0
+    val ret = ArrayBuffer.empty[Run]
 
+    def add() {
+      val toAdd: Run = if (state == classOf[SquareStateUntouched]) Untouched(runIndex, runLength)
+      else if (state == classOf[SquareStateMarked]) Marked(runIndex, runLength)
+      else Deleted(runIndex, runLength)
+      ret.append(toAdd)
+    }
+
+    while (index < b.lineLength) {
+      val square = b.line.squares(index)
+      if (square.getClass == state) {
+        runLength += 1
+      }
+      else {
+        add()
+        state = square.getClass
+        runIndex = index
+        runLength = 1
+      }
+      index += 1
+    }
+
+    add()
+
+    ret.toSeq
+  }
 
   // Abstract over rows and cols
   def doLine(b: LineBasic, startState: BoardState, isFlipped: Boolean): BoardState = {
@@ -63,7 +102,7 @@ case class AlgoMinis(algosToUse: Seq[AlgoMini]) extends Algorithm {
       val ranges = b.line.getMarkRanges()
       val rangesWithMarks = ranges.count(v => v.marked > 0)
       val stretches = b.line.getMarkedStretches()
-      val p = AlgoMiniParams(b, out, stretches, ranges, rangesWithMarks, isFlipped)
+      val p = AlgoMiniParams(b, out, stretches, ranges, analyseLine(b), rangesWithMarks, isFlipped)
 
       algosToUse.foreach(algo => {
         val newP = p.copy(startState = out)
@@ -77,35 +116,35 @@ case class AlgoMinis(algosToUse: Seq[AlgoMini]) extends Algorithm {
   def pruneRow(s: ForSolver, row: Int) = {
     val rowData = s.board.getRowData(row)
     val lineState = s.state.getRow(row)
-    prune(rowData, lineState)
+    prune(s.params.allowPruning, rowData, lineState)
   }
 
   def pruneCol(s: ForSolver, col: Int) = {
     val lineData = s.board.getColData(col)
     val lineState = s.state.getCol(col)
-    prune(lineData, lineState)
+    prune(s.params.allowPruning, lineData, lineState)
   }
 
 
 
-  // This was an exploratory attempt at this:
-  // Remove any completed clues and deleted squares from the edges (effectively shrinking the board), and retry the algo.
-  // However it leads to the algos attempting to manipulate the board state using the wrong indices.  Would have to map
-  // those which looks like a lot of work..
-  def prune(lineData: Vector[Boolean], lineState: LineState) = {
-     val firstUntouchedIdx = AlgoMinis.findSquaresToPrune(lineData, lineState)
-     val lastUntouchedCount = AlgoMinis.findSquaresToPrune(lineData.reverse, LineState(lineState.squares.reverse))
+  // Remove any completed clues and deleted squares from the edges (effectively shrinking the board).  This allows
+  // a lot of algos to just work at the edges, removing a lot of their complexity.
+  def prune(allowPruning: Boolean, lineData: Vector[Boolean], lineState: LineState) = {
+    if (allowPruning) {
+      val firstUntouchedIdx = AlgoMinis.findSquaresToPrune(lineData, lineState)
+      val lastUntouchedCount = AlgoMinis.findSquaresToPrune(lineData.reverse, LineState(lineState.squares.reverse))
 
-    val lineDataPruned = lineData.dropRight(lastUntouchedCount).drop(firstUntouchedIdx)
-    val lineStatePruned = LineState(lineState.squares.dropRight(lastUntouchedCount).drop(firstUntouchedIdx))
+      val lineDataPruned = lineData.dropRight(lastUntouchedCount).drop(firstUntouchedIdx)
+      val lineStatePruned = LineState(lineState.squares.dropRight(lastUntouchedCount).drop(firstUntouchedIdx))
 
-//    val lineDataPruned = lineData
-//    val lineStatePruned = lineState
+      val clues = Clues.generateClues(lineDataPruned)
 
-    val clues = Clues.generateClues(lineDataPruned)
-
-     Pruned(lineData, lineDataPruned, lineState, lineStatePruned, clues, firstUntouchedIdx, lastUntouchedCount)
-//    Pruned(lineStatePruned, clues, 0, 0)
+      Pruned(lineData, lineDataPruned, lineState, lineStatePruned, clues, firstUntouchedIdx, lastUntouchedCount)
+    }
+    else {
+      val clues = Clues.generateClues(lineData)
+      Pruned(lineData, lineData, lineState, lineState, clues, 0, 0)
+    }
   }
 
   def solve(s: ForSolver): SolverResult = {
@@ -162,6 +201,11 @@ object AlgoMinis {
             case Some(ms) =>
               // Haven't completed a clue - go back to before it
               if (ms != clues.head) {
+                index -= ms
+              }
+              else if (ms == clues.head) {
+                // Have a situation like M M D D M M - [2,2,...]
+                // Can fill in that last "-" to D - but, not if we prune.  So skip pruning here.
                 index -= ms
               }
             case _ =>

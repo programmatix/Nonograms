@@ -9,12 +9,14 @@ case class LineBasic(board: Board,         // Always unpruned
                      clues: LineClues,     // May be pruned
                      pruned: Option[Pruned] = None) {
   def lineLength: Int = line.squares.length  // May be pruned
+
+  override def toString: String = line.toString
 }
 
 
 
 // When there's a separate stretch for each clue, and each stretch (group of marks) is in its own range
-@Deprecated // AlgoMinis
+@Deprecated // replaced by AlgoMinis
 case class AlgoEachCluedStretchHasOwnRange() extends Algorithm {
 
   // Abstract over rows and cols

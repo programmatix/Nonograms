@@ -1,6 +1,6 @@
 package nonograms
 
-import nonograms.algos.{AlgoBruteForce, Algorithm}
+import nonograms.algos.{AlgoBruteForce, Algorithm, SolverParams}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -21,11 +21,13 @@ object TestUtils {
     AlgoBruteForce.isValid(newState, clues, stopOnFail = true)
   }
 
-  def testAlgo(algo: Algorithm, input: String, output: String, includeReverse: Boolean = false): Unit = {
+  // Disable pruning for testing as it complicates that
+  def testAlgo(algo: Algorithm, input: String, output: String, includeReverse: Boolean = false, params: SolverParams = SolverParams(allowPruning = false)): Unit = {
     val (board, state) = TestUtils.create(input)
-    val result = Solver.applyAlgoWithState(algo, board, state)
-    assert(result.last == TestUtils.create(output)._2, s"${result.last} != $output")
+    val result = Solver.applyAlgoWithState(algo, board, state, params)
+    assert(result.last == TestUtils.create(output)._2, s"${result.last} != ${output.replace(" ","")}")
     if (includeReverse) {
+      // Note that AlgoMinis will do this automatically
       testAlgo(algo, input.reverse, output.reverse)
     }
   }

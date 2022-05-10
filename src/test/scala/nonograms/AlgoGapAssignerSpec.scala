@@ -11,6 +11,10 @@ class AlgoGapAssignerSpec extends AnyFunSuite {
 
   test("- - - M M M D - - - - D - - D M - - D M") {
     // Gives clue 6  2  1  3  1
-    TestUtils.testAlgo(AlgoMinis(Seq(AlgoGapAssigner())), "X X X M M M D X X - X D - - D M X X D M", "MMMMMMD----D--DM--DM")
+    TestUtils.testAlgo(AlgoMinis(Seq(AlgoGapAssigner())), "X X X M M M D X X - X D - - D M X X D M", "MMMMMMD----D--DMMMDM")
   }
-}
+
+  test("M M D D M M D D M M - D - D M M M M M M  2  2  2  1  6") {
+    TestUtils.testAlgo(AlgoMinis(Seq(AlgoGapAssigner())), "M M D D M M D D M M - D - D M M M M M M", "MMDDMMDDMMDD-DMMMMMM")
+  }
+  }
